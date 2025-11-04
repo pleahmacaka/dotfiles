@@ -14,13 +14,13 @@
       nixpkgs.lib.nixosSystem {
         inherit system;
         modules = [
-          ./modules/default.nix
+          ./modules/common/default.nix
           home-manager.nixosModules.home-manager
           {
             networking.hostName = hostname;
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.users.pleahmacaka = import ./home/pleahmacaka.nix;
+            home-manager.users.pleahmacaka = import ./home-manager/pleahmacaka.nix;
           }
         ] ++ modules;
       };
@@ -31,6 +31,10 @@
         hostname = "nixos-wsl";
         modules = [
           nixos-wsl.nixosModules.default
+          {
+            system.stateVersion = "25.05";
+            wsl.enable = true;
+          }
           ./hosts/wsl/default.nix
         ];
       };

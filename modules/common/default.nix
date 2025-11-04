@@ -4,8 +4,6 @@
 
   time.timeZone = "Asia/Seoul";
 
-  networking.hostName = "nixos";
-
   programs.nix-ld.enable = true;
   programs.neovim.enable = true;
 
@@ -26,6 +24,4 @@
   };
 
   users.groups.pleahmacaka = {};
-
-  system.stateVersion = "25.05";
 }

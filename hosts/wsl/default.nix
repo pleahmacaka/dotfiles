@@ -4,5 +4,5 @@
 
   networking.networkmanager.enable = false;
 
-  services.dbus.enable = lib.mkForce false;
+  services.dbus.enable = true;
 }

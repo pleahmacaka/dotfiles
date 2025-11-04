@@ -16,4 +16,6 @@
   users.users.pleahmacaka.extraGroups = [ "gpio" "i2c" "spi" ];
 
   hardware.enableRedistributableFirmware = true;
+
+  system.stateVersion = "25.05";
 }

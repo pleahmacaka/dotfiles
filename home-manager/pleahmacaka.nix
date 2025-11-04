@@ -3,9 +3,11 @@
   home.stateVersion = "25.05";
   programs.git = {
     enable = true;
-    userName = "PleahMaCaka";
-    userEmail = "pleahmacaka@gmail.com";
-    extraConfig = {
+    settings = {
+      user = {
+        name = "PleahMaCaka";
+        email = "pleahmacaka@gmail.com";
+      };
       init.defaultBranch = "main";
       gitCredentialHelper = {
         enable = true;

@@ -27,4 +27,6 @@
   services.dbus.enable = true;
 
   users.users.pleahmacaka.extraGroups = [ "video" "audio" ];
+
+  system.stateVersion = "25.05";
 }
