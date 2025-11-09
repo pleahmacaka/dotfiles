@@ -1,6 +1,9 @@
 { config, lib, pkgs, ... }:
+
 {
-  wsl.enable = true;
+  # assign true in flake.nix
+  wsl.enable = lib.mkDefault false;
+  wsl.defaultUser = "pleahmacaka";
 
   networking.networkmanager.enable = false;
 

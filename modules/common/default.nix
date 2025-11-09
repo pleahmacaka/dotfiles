@@ -1,4 +1,5 @@
 { config, lib, pkgs, ... }:
+
 {
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
@@ -12,16 +13,8 @@
     gh
     neovim
     btop
+    tree
   ];
 
   security.polkit.enable = true;
-
-  users.users.pleahmacaka = {
-    isNormalUser = true;
-    group = "pleahmacaka";
-    extraGroups = [ "wheel" ];
-    password = "nixos";
-  };
-
-  users.groups.pleahmacaka = {};
 }

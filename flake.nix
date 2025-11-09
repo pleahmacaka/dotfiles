@@ -8,50 +8,58 @@
   };
 
   outputs = { self, nixpkgs, nixos-wsl, home-manager, ... }:
-  let
-    system = "x86_64-linux";
-    mkNixosConfig = { hostname, modules }:
-      nixpkgs.lib.nixosSystem {
-        inherit system;
-        modules = [
-          ./modules/common/default.nix
-          home-manager.nixosModules.home-manager
-          {
-            networking.hostName = hostname;
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users.pleahmacaka = import ./home-manager/pleahmacaka.nix;
-          }
-        ] ++ modules;
-      };
-  in
-  {
-    nixosConfigurations = {
-      wsl = mkNixosConfig {
-        hostname = "nixos-wsl";
-        modules = [
-          nixos-wsl.nixosModules.default
-          {
-            system.stateVersion = "25.05";
-            wsl.enable = true;
-          }
-          ./hosts/wsl/default.nix
-        ];
-      };
+    let
+      system = "x86_64-linux";
+      mkNixosConfig = { hostname, modules }:
+        nixpkgs.lib.nixosSystem {
+          inherit system;
+          modules = [
+            ./modules/common/default.nix
+            home-manager.nixosModules.home-manager
+            {
+              networking.hostName = hostname;
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+            }
+          ] ++ modules;
+        };
+    in
+    {
+      nixosConfigurations = {
+        wsl = mkNixosConfig {
+          hostname = "nixos-wsl";
+          modules = [
+            nixos-wsl.nixosModules.default
+            {
+              system.stateVersion = "25.05";
+              wsl.enable = true;
 
-      laptop = mkNixosConfig {
-        hostname = "nixos-laptop";
-        modules = [
-          ./hosts/laptop/default.nix
-        ];
-      };
+              home-manager.users.pleahmacaka = { ... }@args:
+                import ./home-manager/pleahmacaka.nix (
+                  args // {
+                    pkgs = nixpkgs.legacyPackages.${system};
+                    lib = nixpkgs.lib;
+                    wslEnable = true;
+                  }
+                );
+            }
+            ./hosts/wsl/default.nix
+          ];
+        };
 
-      raspberry-pi = mkNixosConfig {
-        hostname = "nixos-rpi";
-        modules = [
-          ./hosts/rpi/default.nix
-        ];
+        laptop = mkNixosConfig {
+          hostname = "nixos-laptop";
+          modules = [
+            ./hosts/laptop/default.nix
+          ];
+        };
+
+        raspberry-pi = mkNixosConfig {
+          hostname = "nixos-rpi";
+          modules = [
+            ./hosts/rpi/default.nix
+          ];
+        };
       };
     };
-  };
 }
