@@ -30,20 +30,11 @@
           hostname = "nixos-wsl";
           modules = [
             nixos-wsl.nixosModules.default
+            ./hosts/wsl/default.nix
             {
               system.stateVersion = "25.05";
               wsl.enable = true;
-
-              home-manager.users.pleahmacaka = { ... }@args:
-                import ./home-manager/pleahmacaka.nix (
-                  args // {
-                    pkgs = nixpkgs.legacyPackages.${system};
-                    lib = nixpkgs.lib;
-                    wslEnable = true;
-                  }
-                );
             }
-            ./hosts/wsl/default.nix
           ];
         };
 
