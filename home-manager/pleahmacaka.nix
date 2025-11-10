@@ -1,4 +1,4 @@
-{ config, pkgs, lib, wslEnable ? false, ... }:
+{ ... }:
 
 {
   imports = [

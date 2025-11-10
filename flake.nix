@@ -7,10 +7,17 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, nixos-wsl, home-manager, ... }:
+  outputs =
+    {
+      nixpkgs,
+      nixos-wsl,
+      home-manager,
+      ...
+    }:
     let
       system = "x86_64-linux";
-      mkNixosConfig = { hostname, modules }:
+      mkNixosConfig =
+        { hostname, modules }:
         nixpkgs.lib.nixosSystem {
           inherit system;
           modules = [
@@ -21,7 +28,8 @@
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
             }
-          ] ++ modules;
+          ]
+          ++ modules;
         };
     in
     {

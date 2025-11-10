@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   boot.loader.grub = {
@@ -27,7 +27,10 @@
 
   services.dbus.enable = true;
 
-  users.users.pleahmacaka.extraGroups = [ "video" "audio" ];
+  users.users.pleahmacaka.extraGroups = [
+    "video"
+    "audio"
+  ];
 
   system.stateVersion = "25.05";
 }

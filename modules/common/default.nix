@@ -1,7 +1,10 @@
-{ config, lib, pkgs, ... }:
+{ pkgs, ... }:
 
 {
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
 
   time.timeZone = "Asia/Seoul";
 
@@ -14,6 +17,8 @@
     neovim
     btop
     tree
+    nil
+    nixd
   ];
 
   security.polkit.enable = true;
