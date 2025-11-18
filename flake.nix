@@ -21,7 +21,7 @@
         nixpkgs.lib.nixosSystem {
           inherit system;
           modules = [
-            ./modules/common/default.nix
+            ./modules/default.nix
             home-manager.nixosModules.home-manager
             {
               networking.hostName = hostname;
