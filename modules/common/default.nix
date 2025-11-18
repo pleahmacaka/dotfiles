@@ -1,6 +1,13 @@
 { pkgs, ... }:
 
 {
+  imports = [
+    ./cuda.nix
+    ./development.nix
+    ./shell.nix
+    ./users.nix
+  ];
+
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"
