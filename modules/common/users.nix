@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 
 {
   users.users.pleahmacaka = {
@@ -6,7 +6,11 @@
     group = "pleahmacaka";
     extraGroups = [ "wheel" ];
     password = "nixos";
+    shell = pkgs.zsh;
+    useDefaultShell = true;
   };
+
+  system.userActivationScripts.zshrc = "touch ~/.zshrc";
 
   users.groups.pleahmacaka = { };
 }

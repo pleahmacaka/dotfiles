@@ -6,6 +6,8 @@
     "flakes"
   ];
 
+  nixpkgs.config.allowUnfree = true;
+
   time.timeZone = "Asia/Seoul";
 
   programs.nix-ld.enable = true;
