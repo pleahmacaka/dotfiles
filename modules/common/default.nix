@@ -31,4 +31,8 @@
   ];
 
   security.polkit.enable = true;
+
+  # Jupyter like programs are generally needed
+  programs.nix-ld.libraries = with pkgs; [ stdenv.cc.cc.lib ];
+  environment.variables.LD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib:$LD_LIBRARY_PATH";
 }
