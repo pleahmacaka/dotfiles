@@ -5,7 +5,7 @@
     ./services
   ];
 
-  home.stateVersion = "25.05";
+  home.stateVersion = "unstable";
 
   programs.git = {
     enable = true;
@@ -24,6 +24,15 @@
           helper = "!gh auth git-credential";
         };
       };
+    };
+  };
+
+  programs.starship = {
+    enable = true;
+    enableZshIntegration = true;
+    enableTransience = true;
+    settings = {
+      add_newline = true;
     };
   };
 }

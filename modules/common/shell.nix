@@ -9,6 +9,7 @@
 
     shellAliases = {
       cls = "clear";
+      dev = "nix develop -c zsh";
     };
 
     histSize = 10000;
