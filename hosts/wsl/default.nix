@@ -8,4 +8,10 @@
   networking.networkmanager.enable = false;
 
   services.dbus.enable = true;
+
+  programs.zsh = {
+    shellAliases = {
+      switch = "sudo nixos-rebuild switch --flake .#wsl |& nom";
+    };
+  };
 }

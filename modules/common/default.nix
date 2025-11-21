@@ -4,7 +4,6 @@
   imports = [
     # ./cuda.nix
     ./development.nix
-    ./shell.nix
     ./users.nix
   ];
 
@@ -19,6 +18,12 @@
 
   programs.nix-ld.enable = true;
   programs.neovim.enable = true;
+  programs.zsh = {
+    enable = true;
+    shellAliases = {
+      diff-sys = "nvd diff /run/current-system result";
+    };
+  };
 
   environment.systemPackages = with pkgs; [
     git
@@ -28,6 +33,7 @@
     tree
     nil
     nixd
+    nix-output-monitor
   ];
 
   security.polkit.enable = true;

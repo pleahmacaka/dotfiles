@@ -27,6 +27,9 @@
               networking.hostName = hostname;
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
+
+              home-manager.backupFileExtension = "hmbak";
+              home-manager.users.pleahmacaka = import ./home-manager/pleahmacaka.nix;
             }
           ]
           ++ modules;
