@@ -30,6 +30,16 @@
         };
         file = "autoswitch_virtualenv.plugin.zsh";
       }
+      {
+        name = "zsh-bat";
+        src = pkgs.fetchFromGitHub {
+          owner = "fdellwing";
+          repo = "zsh-bat";
+          rev = "467337613c1c220c0d01d69b19d2892935f43e9f";
+          sha256 = "sha256-TTuYZpev0xJPLgbhK5gWUeGut0h7Gi3b+e00SzFvSGo=";
+        };
+        file = "zsh-bat.plugin.zsh";
+      }
     ];
   };
 

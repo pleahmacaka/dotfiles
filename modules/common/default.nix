@@ -30,6 +30,7 @@
     gh
     neovim
     btop
+    bat
     tree
     nil
     nixd
