@@ -18,6 +18,19 @@
       ];
       theme = "robbyrussell";
     };
+
+    plugins = [
+      {
+        name = "zsh-autoswitch-virtualenv";
+        src = pkgs.fetchFromGitHub {
+          owner = "MichaelAquilina";
+          repo = "zsh-autoswitch-virtualenv";
+          rev = "3.7.1";
+          sha256 = "sha256-hwg9wDMU2XqJ5FQEwMVVaz0n+xZ8NI82tH9VhLfFRC4=";
+        };
+        file = "autoswitch_virtualenv.plugin.zsh";
+      }
+    ];
   };
 
   programs.starship = {
