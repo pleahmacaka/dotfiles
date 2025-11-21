@@ -2,7 +2,7 @@
 
 {
   imports = [
-    #    ./cuda.nix
+    # ./cuda.nix
     ./development.nix
     ./shell.nix
     ./users.nix

@@ -52,13 +52,6 @@
             ./hosts/laptop/default.nix
           ];
         };
-
-        raspberry-pi = mkNixosConfig {
-          hostname = "nixos-rpi";
-          modules = [
-            ./hosts/rpi/default.nix
-          ];
-        };
       };
     };
 }
