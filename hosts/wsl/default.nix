@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, pkgs, ... }:
 
 {
   # assign true in flake.nix
@@ -14,4 +14,8 @@
       switch = "sudo nixos-rebuild switch --flake .#wsl |& nom";
     };
   };
+
+  environment.systemPackages = with pkgs; [
+    wslu # handle xdg-open stuff
+  ];
 }
