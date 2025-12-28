@@ -53,6 +53,7 @@
           hostname = "nixos-laptop";
           modules = [
             ./hosts/laptop/default.nix
+	    ./hardware-configuration.nix
           ];
         };
       };
