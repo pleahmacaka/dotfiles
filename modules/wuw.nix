@@ -1,0 +1,4 @@
+{ wuw, ... }:
+{
+  environment.systemPackages = [ wuw ];
+}

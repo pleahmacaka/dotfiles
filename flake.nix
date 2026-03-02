@@ -2,9 +2,10 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
-
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    wuw.url = "github:PleahMaCaka/wuw";
+    wuw.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
@@ -12,14 +13,16 @@
       nixpkgs,
       nixos-wsl,
       home-manager,
+      wuw,
       ...
     }:
     let
       system = "x86_64-linux";
       mkNixosConfig =
-        { hostname, modules }:
+        { hostname, modules, extraArgs ? {} }:
         nixpkgs.lib.nixosSystem {
           inherit system;
+          specialArgs = extraArgs;
           modules = [
             ./modules/default.nix
             home-manager.nixosModules.home-manager
@@ -27,7 +30,6 @@
               networking.hostName = hostname;
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
-
               home-manager.backupFileExtension = "hmbak";
               home-manager.users.pleahmacaka = import ./home-manager/pleahmacaka.nix;
             }
@@ -39,6 +41,9 @@
       nixosConfigurations = {
         wsl = mkNixosConfig {
           hostname = "nixos-wsl";
+          extraArgs = {
+            wuw = wuw.defaultPackage.${system};
+          };
           modules = [
             nixos-wsl.nixosModules.default
             ./hosts/wsl/default.nix
@@ -48,12 +53,11 @@
             }
           ];
         };
-
         laptop = mkNixosConfig {
           hostname = "nixos-laptop";
           modules = [
             ./hosts/laptop/default.nix
-	    ./hardware-configuration.nix
+            ./hardware-configuration.nix
           ];
         };
       };
