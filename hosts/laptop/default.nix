@@ -29,7 +29,8 @@
 
   users.users.pleahmacaka.extraGroups = [
     "video"
-    "audio"
+    "audio",
+    "dialout"
   ];
 
   system.stateVersion = "25.11";

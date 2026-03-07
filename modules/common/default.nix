@@ -35,6 +35,7 @@
     nil
     nixd
     nix-output-monitor
+    just
   ];
 
   security.polkit.enable = true;

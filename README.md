@@ -8,6 +8,12 @@
 
 ---
 
+## Usage
+
+```bash
+sudo nixos-rebuild switch --flake .#wsl
+```
+
 ## File Structure
 
 ```
