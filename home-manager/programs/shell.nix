@@ -1,4 +1,14 @@
-{ pkgs, ... }:
+{ pkgs, osConfig, ... }:
+let
+  hostname = osConfig.networking.hostName;
+  switchCmd =
+    if hostname == "nixos-laptop" then
+      "sudo nixos-rebuild switch --flake /home/pleahmacaka/codehere/dotfiles#laptop"
+    else if hostname == "nixos-wsl" then
+      "sudo nixos-rebuild switch --flake /home/pleahmacaka/codehere/dotfiles#wsl |& nom"
+    else
+      "echo 'switch: unknown host ${hostname}'";
+in
 {
   programs.zsh = {
     enable = true;
@@ -6,9 +16,15 @@
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
 
+    initContent = ''
+      bright() { brightnessctl set "$1%"; }
+    '';
+
     shellAliases = {
       cls = "clear";
       dev = "nix develop -c zsh";
+      switch = switchCmd;
+      reload = "pkill -f 'gjs.*ags.js'; hyprctl dispatch exec 'ags run --gtk4'";
     };
 
     oh-my-zsh = {

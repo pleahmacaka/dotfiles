@@ -11,12 +11,6 @@
 
   services.dbus.enable = true;
 
-  programs.zsh = {
-    shellAliases = {
-      switch = "sudo nixos-rebuild switch --flake .#wsl |& nom";
-    };
-  };
-
   environment.systemPackages = with pkgs; [
     wslu # handle xdg-open stuff
     usbutils
