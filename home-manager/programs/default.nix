@@ -6,5 +6,6 @@
     ./ags.nix
     ./hyprland.nix
     ./alacritty.nix
+    ./xdg.nix
   ];
 }
