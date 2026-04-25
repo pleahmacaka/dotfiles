@@ -5,5 +5,6 @@
     ./direnv.nix
     ./ags.nix
     ./hyprland.nix
+    ./alacritty.nix
   ];
 }
