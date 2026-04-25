@@ -40,7 +40,7 @@
 
   security.polkit.enable = true;
 
-  # Jupyter like programs are generally needed
+  # Jupyter-like programs need stdc++ at runtime; nix-ld provides it to
+  # foreign dynamically-linked binaries without polluting LD_LIBRARY_PATH globally.
   programs.nix-ld.libraries = with pkgs; [ stdenv.cc.cc.lib ];
-  environment.variables.LD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib:$LD_LIBRARY_PATH";
 }
