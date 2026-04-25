@@ -1,0 +1,106 @@
+$fg-color: #ffffff;
+$glass-bg: rgba(30, 30, 40, 0.55);
+$glass-border: rgba(255, 255, 255, 0.14);
+$glass-highlight: rgba(255, 255, 255, 0.08);
+
+window.launcher-window {
+  background: transparent;
+  color: $fg-color;
+}
+
+.launcher-content {
+  background: $glass-bg;
+  color: $fg-color;
+  min-width: 520px;
+  margin-top: 180px;
+  border-radius: 18px;
+  padding: 10px;
+  border: 1px solid $glass-border;
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 $glass-highlight;
+}
+
+.no-results {
+  padding: 20px 12px;
+  opacity: 0.55;
+  font-size: 13px;
+  color: $fg-color;
+}
+
+.search-box {
+  padding: 8px 12px;
+  margin-bottom: 4px;
+}
+
+.search-box .search-icon {
+  margin-right: 8px;
+  opacity: 0.6;
+  -gtk-icon-size: 20px;
+  color: $fg-color;
+}
+
+.search-box entry {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  font-size: 16px;
+  color: $fg-color;
+  caret-color: $fg-color;
+}
+
+.search-box entry:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.search-box text {
+  color: $fg-color;
+}
+
+.search-box placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.results .app-item {
+  padding: 8px 12px;
+  border-radius: 10px;
+  margin: 2px 4px;
+  background: transparent;
+  border: none;
+  transition: background 150ms ease;
+}
+
+.results .app-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.results .app-item:active {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.results .app-item .app-icon {
+  -gtk-icon-size: 36px;
+  margin-right: 12px;
+}
+
+.results .app-item .app-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: $fg-color;
+}
+
+.results .app-item .app-desc {
+  font-size: 11px;
+  opacity: 0.5;
+  margin-top: 2px;
+  color: $fg-color;
+}
+
+.results .app-item .app-shortcut {
+  font-size: 11px;
+  opacity: 0.35;
+  margin-left: 12px;
+  font-family: monospace;
+  color: $fg-color;
+}
