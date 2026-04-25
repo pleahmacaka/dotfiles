@@ -1,6 +1,7 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 {
+  boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.grub = {
     enable = true;
     efiSupport = true;
@@ -9,29 +10,130 @@
 
   networking.networkmanager.enable = true;
 
-  virtualisation.vmware.guest.enable = true;
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+  };
+
+  services.xserver.videoDrivers = [ "nvidia" ];
+
+  hardware.nvidia = {
+    modesetting.enable = true;
+    powerManagement.enable = true;
+    powerManagement.finegrained = true;
+    open = true;
+    nvidiaSettings = true;
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
+
+    prime = {
+      offload = {
+        enable = true;
+        enableOffloadCmd = true;
+      };
+      amdgpuBusId = "PCI:6:0:0";
+      nvidiaBusId = "PCI:1:0:0";
+    };
+  };
+
+  boot.kernelParams = [ "nvidia_drm.modeset=1" ];
 
   programs.hyprland = {
     enable = true;
     xwayland.enable = true;
   };
 
+  services.displayManager.sddm = {
+    enable = true;
+    wayland.enable = true;
+  };
+
+  services.xserver.xkb = {
+    layout = "us";
+  };
+
+  console = {
+    earlySetup = true;
+    font = "${pkgs.terminus_font}/share/consolefonts/ter-v12n.psf.gz";
+    packages = with pkgs; [ terminus_font ];
+    keyMap = "us";
+  };
+
   environment.systemPackages = with pkgs; [
-    kitty
-    wofi
     waybar
     xdg-desktop-portal-hyprland
-    alacritty
-    foot
+    (brave.override { commandLineArgs = "--password-store=gnome-libsecret --ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --disable-features=WaylandColorManagementV1"; })
+    zed-editor
+    tailscale
+    claude-code
+    vesktop
+    wl-clipboard
+    brightnessctl
   ];
 
+  i18n.inputMethod = {
+    enable = true;
+    type = "kime";
+    kime = {
+      daemonModules = [ "Wayland" "Indicator" ];
+      iconColor = "White";
+      extraConfig = ''
+        engine:
+          hangul:
+            layout: dubeolsik
+          global_hotkeys:
+            AltR:
+              behavior: !Toggle
+              - Hangul
+              - Latin
+              result: Consume
+            Hangul:
+              behavior: !Toggle
+              - Hangul
+              - Latin
+              result: Consume
+      '';
+    };
+  };
+
+  fonts = {
+    packages = with pkgs; [
+      noto-fonts
+      noto-fonts-cjk-sans
+      noto-fonts-cjk-serif
+      noto-fonts-color-emoji
+      pretendard
+      nanum
+      d2coding
+    ];
+
+    fontconfig = {
+      enable = true;
+      defaultFonts = {
+        serif = [ "Noto Serif CJK KR" "Noto Serif" ];
+        sansSerif = [ "Pretendard" "Noto Sans CJK KR" "Noto Sans" ];
+        monospace = [ "D2Coding" "Noto Sans Mono CJK KR" ];
+        emoji = [ "Noto Color Emoji" ];
+      };
+    };
+  };
+
+  programs.zsh.enable = true;
+
   services.dbus.enable = true;
+  services.gnome.gnome-keyring.enable = true;
+  security.pam.services.sddm.enableGnomeKeyring = true;
+  services.upower.enable = true;
+
+  services.asusd.enable = true;
+  services.supergfxd.enable = true;
+
+  services.tailscale.enable = true;
 
   users.users.pleahmacaka.extraGroups = [
     "video"
-    "audio",
+    "audio"
     "dialout"
   ];
 
-  system.stateVersion = "25.11";
+  system.stateVersion = "26.04";
 }
