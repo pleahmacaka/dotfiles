@@ -40,11 +40,15 @@
   programs.hyprland = {
     enable = true;
     xwayland.enable = true;
+    withUWSM = false;
   };
 
-  services.displayManager.sddm = {
-    enable = true;
-    wayland.enable = true;
+  services.displayManager = {
+    defaultSession = "hyprland";
+    sddm = {
+      enable = true;
+      wayland.enable = true;
+    };
   };
 
   services.xserver.xkb = {
@@ -58,16 +62,27 @@
     keyMap = "us";
   };
 
+  xdg.portal = {
+    enable = true;
+    extraPortals = with pkgs; [
+      xdg-desktop-portal-hyprland
+      xdg-desktop-portal-gtk
+    ];
+    config.common.default = "hyprland";
+  };
+
   environment.systemPackages = with pkgs; [
     waybar
-    xdg-desktop-portal-hyprland
     (brave.override { commandLineArgs = "--password-store=gnome-libsecret --ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --disable-features=WaylandColorManagementV1"; })
     zed-editor
     tailscale
     claude-code
     vesktop
     wl-clipboard
+    cliphist
+    hyprshot
     brightnessctl
+    obs-studio
   ];
 
   i18n.inputMethod = {
