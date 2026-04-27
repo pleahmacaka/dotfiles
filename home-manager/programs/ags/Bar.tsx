@@ -6,6 +6,8 @@ import AstalBattery from "gi://AstalBattery"
 
 const { TOP, BOTTOM, LEFT } = Astal.WindowAnchor
 
+const BAR_POPOVER_OFFSET = 16
+
 function Workspaces() {
   const hypr = AstalHyprland.get_default()
   return (
@@ -54,6 +56,7 @@ function Clock() {
           const cal = new Gtk.Calendar({ cssClasses: ["clock-calendar"] })
           popover = new Gtk.Popover({ child: cal, autohide: true, hasArrow: true })
           popover.set_position(Gtk.PositionType.RIGHT)
+          popover.set_offset(BAR_POPOVER_OFFSET, 0)
           popover.set_parent(self)
         }
         popover.popup()
@@ -119,6 +122,7 @@ function Notifications() {
           ) as Gtk.Widget
           popover = new Gtk.Popover({ child: content, autohide: true, hasArrow: true })
           popover.set_position(Gtk.PositionType.RIGHT)
+          popover.set_offset(BAR_POPOVER_OFFSET, 0)
           popover.set_parent(self)
         }
         popover.popup()
@@ -142,6 +146,7 @@ function Tray() {
               if (!item.menuModel) return
               const menu = new Gtk.PopoverMenu({ menuModel: item.menuModel })
               menu.set_position(Gtk.PositionType.RIGHT)
+              menu.set_offset(BAR_POPOVER_OFFSET, 0)
               self.insert_action_group("dbusmenu", item.actionGroup)
               menu.set_parent(self)
               menu.popup()
