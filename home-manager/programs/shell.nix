@@ -2,9 +2,10 @@
 let
   flakeAttr = lib.removePrefix "nixos-" osConfig.networking.hostName;
   flakePath = "${config.home.homeDirectory}/codehere/dotfiles";
-  switchCmd = "nh os switch ${flakePath} -H ${flakeAttr}";
-  testCmd = "nh os test ${flakePath} -H ${flakeAttr}";
-  switchCleanCmd = "nh clean all --keep 5 && rm -rf $HOME/.cache/nix && ${switchCmd}";
+  nhEnv = "NH_FLAKE=${flakePath}";
+  switchCmd = "${nhEnv} nh os switch -H ${flakeAttr}";
+  testCmd = "${nhEnv} nh os test -H ${flakeAttr}";
+  switchCleanCmd = "${nhEnv} nh clean all --keep 5 && rm -rf $HOME/.cache/nix && ${switchCmd}";
 in
 {
   programs.nh = {
