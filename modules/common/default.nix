@@ -8,7 +8,7 @@
   ];
 
   nix.settings = {
-    experimental-features = [ "nix-command" "flakes" "lazy-trees" "parallel-eval" ];
+    experimental-features = [ "nix-command" "flakes" ];
     eval-cache = true;
 
     substituters = [
