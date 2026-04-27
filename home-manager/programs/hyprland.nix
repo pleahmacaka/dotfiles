@@ -65,7 +65,7 @@
       ];
 
       bind = [
-        "SUPER, T, exec, alacritty"
+        "SUPER, T, exec, ghostty"
         "SUPER, Q, killactive"
 
         "SUPER SHIFT, S, exec, hyprshot -m region --freeze --clipboard-only --silent"

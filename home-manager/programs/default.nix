@@ -5,7 +5,7 @@
     ./direnv.nix
     ./ags.nix
     ./hyprland.nix
-    ./alacritty.nix
+    ./ghostty.nix
     ./xdg.nix
     ./theme.nix
     ./mako.nix
