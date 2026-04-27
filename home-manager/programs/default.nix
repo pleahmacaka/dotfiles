@@ -8,5 +8,6 @@
     ./alacritty.nix
     ./xdg.nix
     ./theme.nix
+    ./mako.nix
   ];
 }
