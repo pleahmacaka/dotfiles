@@ -1,15 +1,17 @@
-{ pkgs, osConfig, ... }:
+{ pkgs, osConfig, config, lib, ... }:
 let
-  hostname = osConfig.networking.hostName;
-  switchCmd =
-    if hostname == "nixos-laptop" then
-      "sudo nixos-rebuild switch --flake /home/pleahmacaka/codehere/dotfiles#laptop"
-    else if hostname == "nixos-wsl" then
-      "sudo nixos-rebuild switch --flake /home/pleahmacaka/codehere/dotfiles#wsl |& nom"
-    else
-      "echo 'switch: unknown host ${hostname}'";
+  flakeAttr = lib.removePrefix "nixos-" osConfig.networking.hostName;
+  flakePath = "${config.home.homeDirectory}/codehere/dotfiles";
+  switchCmd = "nh os switch ${flakePath} -H ${flakeAttr}";
+  testCmd = "nh os test ${flakePath} -H ${flakeAttr}";
+  switchCleanCmd = "nh clean all --keep 5 && rm -rf $HOME/.cache/nix && ${switchCmd}";
 in
 {
+  programs.nh = {
+    enable = true;
+    flake = flakePath;
+  };
+
   programs.zsh = {
     enable = true;
     enableCompletion = true;
@@ -18,13 +20,20 @@ in
 
     initContent = ''
       bright() { brightnessctl set "$1%"; }
+      export PATH="$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"
     '';
 
     shellAliases = {
       cls = "clear";
       dev = "nix develop -c zsh";
       switch = switchCmd;
-      reload = "pkill -f 'gjs.*ags.js'; hyprctl dispatch exec 'ags run --gtk4'";
+      switch-clean = switchCleanCmd;
+      try = testCmd;
+      reload = "${testCmd} && (pkill -f 'gjs.*ags.js'; hyprctl dispatch exec 'ags run --gtk4')";
+      claude = "claude --dangerously-skip-permissions";
+      claude-local = "$HOME/.local/bin/claude-local";
+      neofetch = "fastfetch";
+      notify = "notify-send";
     };
 
     oh-my-zsh = {
