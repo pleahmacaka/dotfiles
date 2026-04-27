@@ -7,6 +7,9 @@ let
     "${pkgs.astal.apps}/lib/girepository-1.0"
     "${pkgs.astal.astal4}/lib/girepository-1.0"
     "${pkgs.astal.io}/lib/girepository-1.0"
+    "${pkgs.astal.hyprland}/lib/girepository-1.0"
+    "${pkgs.astal.tray}/lib/girepository-1.0"
+    "${pkgs.astal.battery}/lib/girepository-1.0"
     "${pkgs.gtk4}/lib/girepository-1.0"
     "${pkgs.graphene}/lib/girepository-1.0"
   ];
@@ -29,6 +32,9 @@ in
     pkgs.astal.astal4
     pkgs.astal.io
     pkgs.astal.gjs
+    pkgs.astal.hyprland
+    pkgs.astal.tray
+    pkgs.astal.battery
     pkgs.graphene
   ];
 

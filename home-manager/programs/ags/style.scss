@@ -3,6 +3,13 @@ $glass-bg: rgba(30, 30, 40, 0.55);
 $glass-border: rgba(255, 255, 255, 0.14);
 $glass-highlight: rgba(255, 255, 255, 0.08);
 
+$bar-min-width: 42px;
+$bar-padding-x: 6px;
+$bar-border: 1px;
+$bar-gap: 8px;
+$bar-total-width: $bar-min-width + ($bar-padding-x * 2) + $bar-border;
+$bar-clearance: $bar-total-width + $bar-gap;
+
 window.launcher-window {
   background: transparent;
   color: $fg-color;
@@ -13,6 +20,7 @@ window.launcher-window {
   color: $fg-color;
   min-width: 520px;
   margin-top: 180px;
+  margin-left: $bar-clearance;
   border-radius: 18px;
   padding: 10px;
   border: 1px solid $glass-border;
@@ -103,4 +111,225 @@ window.launcher-window {
   margin-left: 12px;
   font-family: monospace;
   color: $fg-color;
+}
+
+window.bar-window {
+  background: transparent;
+  color: $fg-color;
+}
+
+.bar-content {
+  background: $glass-bg;
+  color: $fg-color;
+  padding: 8px 6px;
+  border: 1px solid $glass-border;
+  border-left: none;
+  border-radius: 0 18px 18px 0;
+  box-shadow:
+    4px 0 14px rgba(0, 0, 0, 0.3),
+    inset 1px 0 0 $glass-highlight;
+  min-width: 42px;
+}
+
+.workspaces {
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+
+.workspaces button.ws {
+  all: unset;
+  min-width: 10px;
+  min-height: 10px;
+  margin: 4px 0;
+  padding: 0;
+  background-color: rgba(255, 255, 255, 0.3);
+  background-image: none;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  border-radius: 9999px;
+  transition:
+    min-width 220ms cubic-bezier(0.4, 0, 0.2, 1),
+    min-height 220ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 220ms ease;
+}
+
+.workspaces button.ws:hover {
+  background-color: rgba(255, 255, 255, 0.55);
+  min-width: 12px;
+  min-height: 12px;
+}
+
+.workspaces button.ws:focus,
+.workspaces button.ws:active {
+  background-image: none;
+  box-shadow: none;
+  outline: none;
+}
+
+.workspaces button.ws.ws-active {
+  background-color: #a78bfa;
+  min-width: 10px;
+  min-height: 22px;
+}
+
+.workspaces button.ws.ws-active:hover {
+  background-color: #b89dfb;
+  min-width: 12px;
+  min-height: 24px;
+}
+
+.clock {
+  padding: 4px 2px;
+  color: $fg-color;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  transition: background 150ms ease;
+}
+
+.clock:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.clock-calendar {
+  padding: 8px;
+  background: $glass-bg;
+  color: $fg-color;
+  border-radius: 12px;
+}
+
+.clock-calendar .day-number {
+  padding: 4px 8px;
+  margin: 1px;
+  border-radius: 6px;
+  transition: background 120ms ease;
+}
+
+.clock-calendar .day-number:hover {
+  background: rgba(255, 255, 255, 0.10);
+}
+
+.clock-calendar .day-number.today {
+  color: #a78bfa;
+  font-weight: 600;
+}
+
+.clock-calendar .day-number.other-month {
+  opacity: 0.35;
+}
+
+popover.background contents {
+  background: $glass-bg;
+  color: $fg-color;
+  border: 1px solid $glass-border;
+  border-radius: 12px;
+  padding: 8px;
+}
+
+.notifications {
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 4px;
+  margin: 2px 0;
+  transition: background 150ms ease;
+}
+
+.notifications:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.notifications image {
+  -gtk-icon-size: 16px;
+  color: $fg-color;
+}
+
+.notif-list {
+  min-width: 280px;
+  padding: 4px;
+}
+
+.notif-item {
+  padding: 8px 10px;
+  margin: 2px 0;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.notif-empty {
+  padding: 16px;
+  opacity: 0.5;
+  font-size: 12px;
+}
+
+.notif-clear {
+  margin-top: 6px;
+  padding: 6px 10px;
+  background: rgba(167, 139, 250, 0.15);
+  border-radius: 8px;
+  border: 1px solid rgba(167, 139, 250, 0.3);
+  color: $fg-color;
+  font-size: 11px;
+}
+
+.notif-clear:hover {
+  background: rgba(167, 139, 250, 0.25);
+}
+
+.clock-time {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.clock-period {
+  font-size: 9px;
+  font-weight: 600;
+  opacity: 0.6;
+  letter-spacing: 0.5px;
+  margin-top: -1px;
+}
+
+.clock-date {
+  font-size: 10px;
+  opacity: 0.55;
+  margin-top: 3px;
+}
+
+.tray {
+  margin-bottom: 6px;
+}
+
+.tray .tray-item {
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 4px;
+  margin: 1px 2px;
+  transition: background 150ms ease;
+}
+
+.tray .tray-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.tray .tray-item image {
+  -gtk-icon-size: 16px;
+  color: $fg-color;
+}
+
+.battery {
+  padding: 4px 0;
+  border-radius: 8px;
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: $fg-color;
+}
+
+.battery image {
+  -gtk-icon-size: 16px;
+  margin-bottom: 2px;
 }

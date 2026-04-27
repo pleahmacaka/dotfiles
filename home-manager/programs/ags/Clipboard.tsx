@@ -1,35 +1,64 @@
 import { App, Astal, Gtk, Gdk } from "astal/gtk4"
-import { Variable } from "astal"
-import AstalApps from "gi://AstalApps"
+import { Variable, exec, execAsync } from "astal"
 
 const { TOP, BOTTOM, LEFT, RIGHT } = Astal.WindowAnchor
 
-type State = { query: string; items: AstalApps.Application[] }
+type Entry = { id: string; preview: string }
+type State = { query: string; items: Entry[] }
 
 const MAX_RESULTS = 8
 
-export default function Applauncher() {
-  const apps = new AstalApps.Apps()
+function loadHistory(): Entry[] {
+  try {
+    const raw = exec("cliphist list")
+    return raw
+      .split("\n")
+      .filter((l) => l.length > 0)
+      .map((line) => {
+        const tab = line.indexOf("\t")
+        if (tab === -1) return { id: line, preview: line }
+        return { id: line.slice(0, tab), preview: line.slice(tab + 1) }
+      })
+  } catch {
+    return []
+  }
+}
+
+export default function Clipboard() {
+  const all = Variable<Entry[]>([])
   const state = Variable<State>({ query: "", items: [] })
   let searchentry: Gtk.Entry
 
-  function search(text: string) {
-    if (text === "") state.set({ query: "", items: [] })
-    else state.set({ query: text, items: apps.fuzzy_query(text).slice(0, MAX_RESULTS) })
+  function refresh() {
+    const items = loadHistory()
+    all.set(items)
+    filter("")
   }
 
-  function launch(app?: AstalApps.Application) {
-    if (app) {
-      win.hide()
-      app.launch()
+  function filter(text: string) {
+    const items = all.get()
+    if (text === "") {
+      state.set({ query: "", items: items.slice(0, MAX_RESULTS) })
+    } else {
+      const q = text.toLowerCase()
+      state.set({
+        query: text,
+        items: items.filter((i) => i.preview.toLowerCase().includes(q)).slice(0, MAX_RESULTS),
+      })
     }
+  }
+
+  function paste(entry?: Entry) {
+    if (!entry) return
+    win.hide()
+    execAsync(["sh", "-c", `cliphist decode ${entry.id} | wl-copy`]).catch(() => {})
   }
 
   function hide() {
     win.visible = false
   }
 
-  function AppSlot(index: number) {
+  function ItemSlot(index: number) {
     return (
       <revealer
         transitionType={Gtk.RevealerTransitionType.CROSSFADE}
@@ -40,28 +69,17 @@ export default function Applauncher() {
           cssClasses={["app-item"]}
           widthRequest={500}
           heightRequest={56}
-          onClicked={() => launch(state.get().items[index])}
+          onClicked={() => paste(state.get().items[index])}
         >
           <box>
-            <image
-              iconName={state((s) => s.items[index]?.iconName || "application-x-executable")}
-              cssClasses={["app-icon"]}
-            />
+            <image iconName="edit-paste-symbolic" cssClasses={["app-icon"]} />
             <box vertical hexpand valign={Gtk.Align.CENTER}>
               <label
-                label={state((s) => s.items[index]?.name || "")}
+                label={state((s) => s.items[index]?.preview || "")}
                 halign={Gtk.Align.START}
                 cssClasses={["app-name"]}
                 ellipsize={3}
-                maxWidthChars={40}
-              />
-              <label
-                label={state((s) => s.items[index]?.description || "")}
-                visible={state((s) => !!s.items[index]?.description)}
-                halign={Gtk.Align.START}
-                cssClasses={["app-desc"]}
-                ellipsize={3}
-                maxWidthChars={50}
+                maxWidthChars={60}
               />
             </box>
             <label
@@ -77,7 +95,7 @@ export default function Applauncher() {
 
   const win = (
     <window
-      name="launcher"
+      name="clipboard"
       namespace="launcher"
       cssClasses={["launcher-window"]}
       anchor={TOP | BOTTOM | LEFT | RIGHT}
@@ -88,9 +106,8 @@ export default function Applauncher() {
       visible={false}
       onNotifyVisible={({ visible }) => {
         if (visible) {
-          apps.reload()
           searchentry?.set_text("")
-          state.set({ query: "", items: [] })
+          refresh()
           searchentry?.grab_focus()
         }
       }}
@@ -102,26 +119,28 @@ export default function Applauncher() {
         vertical
       >
         <box cssClasses={["search-box"]}>
-          <image iconName="system-search-symbolic" cssClasses={["search-icon"]} />
+          <image iconName="edit-paste-symbolic" cssClasses={["search-icon"]} />
           <entry
-            setup={(self: Gtk.Entry) => { searchentry = self }}
-            onNotifyText={({ text }) => search(text)}
-            placeholderText="Search applications..."
-            onActivate={() => launch(state.get().items[0])}
+            setup={(self: Gtk.Entry) => {
+              searchentry = self
+            }}
+            onNotifyText={({ text }) => filter(text)}
+            placeholderText="Search clipboard..."
+            onActivate={() => paste(state.get().items[0])}
             hexpand
           />
         </box>
         <box vertical cssClasses={["results"]}>
-          {Array.from({ length: MAX_RESULTS }, (_, i) => AppSlot(i))}
+          {Array.from({ length: MAX_RESULTS }, (_, i) => ItemSlot(i))}
           <revealer
             hexpand
             transitionType={Gtk.RevealerTransitionType.CROSSFADE}
             transitionDuration={120}
-            revealChild={state((s) => s.items.length === 0 && s.query !== "")}
+            revealChild={state((s) => s.items.length === 0)}
           >
             <label
               cssClasses={["no-results"]}
-              label="No results"
+              label={state((s) => (s.query === "" ? "Clipboard is empty" : "No results"))}
               halign={Gtk.Align.CENTER}
               hexpand
             />
@@ -131,7 +150,6 @@ export default function Applauncher() {
     </window>
   ) as Astal.Window
 
-  // keyboard handler
   const keyController = new Gtk.EventControllerKey()
   keyController.connect("key-pressed", (
     _self: Gtk.EventControllerKey,
@@ -144,11 +162,10 @@ export default function Applauncher() {
       return true
     }
 
-    // Alt+N to launch Nth result
     if (modState & Gdk.ModifierType.ALT_MASK) {
       const num = keyval - Gdk.KEY_1
       if (num >= 0 && num <= 8) {
-        launch(state.get().items[num])
+        paste(state.get().items[num])
         return true
       }
     }
@@ -157,9 +174,10 @@ export default function Applauncher() {
   })
   win.add_controller(keyController)
 
-  // click outside to close
   const click = new Gtk.GestureClick()
-  click.connect("pressed", () => { hide() })
+  click.connect("pressed", () => {
+    hide()
+  })
   win.add_controller(click)
 
   return win
