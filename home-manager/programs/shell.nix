@@ -35,6 +35,7 @@ in
       claude-local = "$HOME/.local/bin/claude-local";
       neofetch = "fastfetch";
       notify = "notify-send";
+      somo = "somo -l";
     };
 
     oh-my-zsh = {

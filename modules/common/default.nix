@@ -39,6 +39,15 @@
     connect-timeout = 5;
 
     trusted-users = [ "root" "@wheel" ];
+
+    flake-registry = "";
+    warn-dirty = false;
+  };
+
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 14d";
   };
 
   nixpkgs.config.allowUnfree = true;
@@ -53,11 +62,45 @@
 
   programs.nix-ld.enable = true;
   programs.neovim.enable = true;
+  programs.command-not-found.enable = false;
+  programs.nix-index.enable = true;
   programs.zsh = {
     enable = true;
     shellAliases = {
       diff-sys = "nvd diff /run/current-system result";
     };
+  };
+
+  documentation.nixos.enable = false;
+
+  services.fstrim.enable = true;
+  services.dbus.implementation = "broker";
+  services.journald.extraConfig = ''
+    SystemMaxUse=500M
+  '';
+
+  boot.kernel.sysctl = {
+    "net.ipv4.tcp_congestion_control" = "bbr";
+    "net.core.default_qdisc" = "fq";
+    "net.ipv4.tcp_fastopen" = 3;
+    "net.ipv4.tcp_slow_start_after_idle" = 0;
+    "net.ipv4.tcp_mtu_probing" = 1;
+    "kernel.nmi_watchdog" = 0;
+  };
+
+  services.resolved = {
+    enable = true;
+    settings.Resolve = {
+      DNSSEC = "true";
+      DNSOverTLS = "true";
+      FallbackDNS = [ "1.1.1.1#cloudflare-dns.com" "9.9.9.9#dns.quad9.net" ];
+    };
+  };
+
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    openFirewall = true;
   };
 
   environment.systemPackages = with pkgs; [
@@ -72,6 +115,8 @@
     nix-output-monitor
     just
     fastfetch
+    axel
+    somo
   ];
 
   security.polkit.enable = true;

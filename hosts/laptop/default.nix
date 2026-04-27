@@ -2,13 +2,24 @@
 
 {
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.grub = {
+  boot.loader.systemd-boot = {
     enable = true;
-    efiSupport = true;
-    device = "nodev";
+    configurationLimit = 10;
+  };
+  boot.loader.timeout = 1;
+
+  boot.initrd.systemd.enable = true;
+
+  boot.kernel.sysctl = {
+    "vm.swappiness" = 180;
   };
 
-  networking.networkmanager.enable = true;
+  fileSystems."/".options = [ "noatime" ];
+
+  networking.networkmanager = {
+    enable = true;
+    wifi.powersave = true;
+  };
 
   hardware.graphics = {
     enable = true;
@@ -36,6 +47,22 @@
   };
 
   boot.kernelParams = [ "nvidia_drm.modeset=1" ];
+
+  boot.tmp = {
+    useTmpfs = true;
+    tmpfsSize = "50%";
+  };
+
+  zramSwap = {
+    enable = true;
+    algorithm = "zstd";
+    memoryPercent = 50;
+  };
+
+  services.auto-cpufreq.enable = true;
+  services.power-profiles-daemon.enable = false;
+  services.fwupd.enable = true;
+  services.earlyoom.enable = true;
 
   programs.hyprland = {
     enable = true;
@@ -83,6 +110,7 @@
     hyprshot
     brightnessctl
     obs-studio
+    rustdesk-flutter
   ];
 
   i18n.inputMethod = {
@@ -119,6 +147,7 @@
       pretendard
       nanum
       d2coding
+      terminus_font
     ];
 
     fontconfig = {
