@@ -18,7 +18,7 @@
 
   networking.networkmanager = {
     enable = true;
-    wifi.powersave = true;
+    wifi.powersave = false;
   };
 
   hardware.graphics = {
@@ -111,6 +111,10 @@
     brightnessctl
     obs-studio
     rustdesk-flutter
+    python313Packages.huggingface-hub
+    usbutils
+    unzip
+    wget
   ];
 
   i18n.inputMethod = {
@@ -168,10 +172,29 @@
   security.pam.services.sddm.enableGnomeKeyring = true;
   services.upower.enable = true;
 
+  services.logind = {
+    lidSwitch = "ignore";
+    lidSwitchExternalPower = "ignore";
+    lidSwitchDocked = "ignore";
+  };
+
   services.asusd.enable = true;
   services.supergfxd.enable = true;
 
   services.tailscale.enable = true;
+
+  services.openssh = {
+    enable = true;
+    openFirewall = false;
+    settings = {
+      PasswordAuthentication = true;
+      PermitRootLogin = "no";
+    };
+  };
+
+  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 22 ];
+  networking.firewall.allowedTCPPorts = [ 25565 ];
+  networking.firewall.allowedUDPPorts = [ 25565 ];
 
   users.users.pleahmacaka.extraGroups = [
     "video"
