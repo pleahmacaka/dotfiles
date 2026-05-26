@@ -36,6 +36,7 @@ in
       neofetch = "fastfetch";
       notify = "notify-send";
       somo = "somo -l";
+      ts = "tailscale";
     };
 
     oh-my-zsh = {
