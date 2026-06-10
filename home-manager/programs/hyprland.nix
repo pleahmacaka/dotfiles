@@ -5,15 +5,12 @@
     enable = true;
     settings = {
       env = [
-        "AQ_DRM_DEVICES,/dev/dri/card2"
         "LIBVA_DRIVER_NAME,radeonsi"
         "__GLX_VENDOR_LIBRARY_NAME,mesa"
-        "WLR_NO_HARDWARE_CURSORS,1"
-        "NVD_BACKEND,direct"
       ];
 
       monitor = [
-        ",preferred,auto,1"
+        "HDMI-A-1,2560x1440@144,0x0,1"
       ];
 
       general = {

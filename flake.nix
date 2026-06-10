@@ -63,6 +63,13 @@
             ./hardware-configuration.nix
           ];
         };
+        desktop = mkNixosConfig {
+          hostname = "nixos-desktop";
+          modules = [
+            ./hosts/desktop/default.nix
+            ./hosts/desktop/hardware-configuration.nix
+          ];
+        };
       };
     };
 }
