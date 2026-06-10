@@ -8,7 +8,10 @@
   ];
 
   nix.settings = {
-    experimental-features = [ "nix-command" "flakes" ];
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
     eval-cache = true;
 
     substituters = [
@@ -38,7 +41,10 @@
     download-buffer-size = 268435456;
     connect-timeout = 5;
 
-    trusted-users = [ "root" "@wheel" ];
+    trusted-users = [
+      "root"
+      "@wheel"
+    ];
 
     flake-registry = "";
     warn-dirty = false;
@@ -88,12 +94,20 @@
     "kernel.nmi_watchdog" = 0;
   };
 
+  networking.nameservers = [
+    "1.1.1.1"
+    "8.8.8.8"
+  ];
+
   services.resolved = {
     enable = true;
     settings.Resolve = {
       DNSSEC = "true";
       DNSOverTLS = "true";
-      FallbackDNS = [ "1.1.1.1#cloudflare-dns.com" "9.9.9.9#dns.quad9.net" ];
+      FallbackDNS = [
+        "1.1.1.1#cloudflare-dns.com"
+        "9.9.9.9#dns.quad9.net"
+      ];
     };
   };
 
