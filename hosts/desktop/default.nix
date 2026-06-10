@@ -82,6 +82,7 @@
     unzip
     wget
     termius
+    obsidian
   ];
 
   i18n.inputMethod = {
@@ -89,6 +90,7 @@
     type = "kime";
     kime = {
       daemonModules = [
+        "Xim"
         "Wayland"
         "Indicator"
       ];

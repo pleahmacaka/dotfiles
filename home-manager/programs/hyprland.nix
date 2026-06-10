@@ -11,6 +11,16 @@
 
       monitor = [
         "HDMI-A-1,2560x1440@144,0x0,1"
+        "DP-1,2560x1440@144,-2560x0,1"
+      ];
+
+      workspace = [
+        "1, monitor:HDMI-A-1, default:true, persistent:true"
+        "2, monitor:HDMI-A-1, persistent:true"
+        "3, monitor:HDMI-A-1, persistent:true"
+        "4, monitor:HDMI-A-1, persistent:true"
+        "5, monitor:HDMI-A-1, persistent:true"
+        "10, monitor:DP-1, default:true, persistent:true"
       ];
 
       general = {
@@ -48,6 +58,7 @@
         natural_scroll = false;
         repeat_delay = 150;
         repeat_rate = 50;
+        kb_options = "korean:ralt_hangul,korean:rctrl_hanja";
         touchpad = {
           natural_scroll = true;
           scroll_factor = 0.3;

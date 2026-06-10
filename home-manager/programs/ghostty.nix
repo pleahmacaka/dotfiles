@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, osConfig, ... }:
 
 {
   home.packages = with pkgs; [
@@ -10,7 +10,7 @@
     enableZshIntegration = true;
     settings = {
       font-family = "JetBrainsMono Nerd Font";
-      font-size = 12;
+      font-size = if osConfig.networking.hostName == "nixos-desktop" then 10 else 12;
       background-opacity = 0.95;
       window-padding-x = 14;
       window-padding-y = 14;

@@ -121,7 +121,7 @@
     enable = true;
     type = "kime";
     kime = {
-      daemonModules = [ "Wayland" "Indicator" ];
+      daemonModules = [ "Xim" "Wayland" "Indicator" ];
       iconColor = "White";
       extraConfig = ''
         engine:
