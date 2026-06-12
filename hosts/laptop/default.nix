@@ -172,10 +172,10 @@
   security.pam.services.sddm.enableGnomeKeyring = true;
   services.upower.enable = true;
 
-  services.logind = {
-    lidSwitch = "ignore";
-    lidSwitchExternalPower = "ignore";
-    lidSwitchDocked = "ignore";
+  services.logind.settings.Login = {
+    HandleLidSwitch = "ignore";
+    HandleLidSwitchExternalPower = "ignore";
+    HandleLidSwitchDocked = "ignore";
   };
 
   services.asusd.enable = true;
