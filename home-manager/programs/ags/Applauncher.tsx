@@ -1,79 +1,85 @@
-import { App, Astal, Gtk, Gdk } from "astal/gtk4"
-import { Variable } from "astal"
-import AstalApps from "gi://AstalApps"
+import { App, Astal, Gtk, Gdk } from "astal/gtk4";
+import { Variable } from "astal";
+import AstalApps from "gi://AstalApps";
 
-const { TOP, BOTTOM, LEFT, RIGHT } = Astal.WindowAnchor
+const { TOP, BOTTOM, LEFT, RIGHT } = Astal.WindowAnchor;
 
-type State = { query: string; items: AstalApps.Application[] }
-
-const MAX_RESULTS = 8
+const SEARCH_LIMIT = 30;
+const KEY_LIMIT = 9;
 
 export default function Applauncher() {
-  const apps = new AstalApps.Apps()
-  const state = Variable<State>({ query: "", items: [] })
-  let searchentry: Gtk.Entry
+  const apps = new AstalApps.Apps();
+  const items = Variable<AstalApps.Application[]>([]);
+  const query = Variable<string>("");
+  let searchentry: Gtk.Entry;
 
-  function search(text: string) {
-    if (text === "") state.set({ query: "", items: [] })
-    else state.set({ query: text, items: apps.fuzzy_query(text).slice(0, MAX_RESULTS) })
+  function refresh(text: string) {
+    query.set(text);
+    if (text === "") {
+      const all = [...apps.list].sort((a, b) => a.name.localeCompare(b.name));
+      items.set(all);
+    } else {
+      items.set(apps.fuzzy_query(text).slice(0, SEARCH_LIMIT));
+    }
   }
 
   function launch(app?: AstalApps.Application) {
     if (app) {
-      win.hide()
-      app.launch()
+      win.hide();
+      app.launch();
     }
   }
 
   function hide() {
-    win.visible = false
+    win.visible = false;
   }
 
-  function AppSlot(index: number) {
+  function renderItem(app: AstalApps.Application, index: number) {
     return (
-      <revealer
-        transitionType={Gtk.RevealerTransitionType.CROSSFADE}
-        transitionDuration={120}
-        revealChild={state((s) => index < s.items.length)}
+      <button
+        cssClasses={["app-item"]}
+        widthRequest={500}
+        heightRequest={56}
+        onClicked={() => launch(app)}
       >
-        <button
-          cssClasses={["app-item"]}
-          widthRequest={500}
-          heightRequest={56}
-          onClicked={() => launch(state.get().items[index])}
-        >
-          <box>
-            <image
-              iconName={state((s) => s.items[index]?.iconName || "application-x-executable")}
-              cssClasses={["app-icon"]}
+        <box>
+          <image
+            iconName={app.iconName || "application-x-executable"}
+            cssClasses={["app-icon"]}
+          />
+          <box vertical hexpand valign={Gtk.Align.CENTER}>
+            <label
+              label={app.name}
+              halign={Gtk.Align.START}
+              cssClasses={["app-name"]}
+              ellipsize={3}
+              maxWidthChars={40}
             />
-            <box vertical hexpand valign={Gtk.Align.CENTER}>
-              <label
-                label={state((s) => s.items[index]?.name || "")}
-                halign={Gtk.Align.START}
-                cssClasses={["app-name"]}
-                ellipsize={3}
-                maxWidthChars={40}
-              />
-              <label
-                label={state((s) => s.items[index]?.description || "")}
-                visible={state((s) => !!s.items[index]?.description)}
-                halign={Gtk.Align.START}
-                cssClasses={["app-desc"]}
-                ellipsize={3}
-                maxWidthChars={50}
-              />
-            </box>
+            <label
+              label={app.description || ""}
+              visible={!!app.description}
+              halign={Gtk.Align.START}
+              cssClasses={["app-desc"]}
+              ellipsize={3}
+              maxWidthChars={50}
+            />
+          </box>
+          {index < KEY_LIMIT ? (
             <label
               valign={Gtk.Align.CENTER}
               cssClasses={["app-shortcut"]}
               label={`Alt+${index + 1}`}
             />
-          </box>
-        </button>
-      </revealer>
-    )
+          ) : null}
+        </box>
+      </button>
+    );
   }
+
+  const showNoResults = Variable.derive(
+    [items, query],
+    (it, q) => it.length === 0 && q !== "",
+  );
 
   const win = (
     <window
@@ -88,10 +94,10 @@ export default function Applauncher() {
       visible={false}
       onNotifyVisible={({ visible }) => {
         if (visible) {
-          apps.reload()
-          searchentry?.set_text("")
-          state.set({ query: "", items: [] })
-          searchentry?.grab_focus()
+          apps.reload();
+          searchentry?.set_text("");
+          refresh("");
+          searchentry?.grab_focus();
         }
       }}
     >
@@ -102,65 +108,76 @@ export default function Applauncher() {
         vertical
       >
         <box cssClasses={["search-box"]}>
-          <image iconName="system-search-symbolic" cssClasses={["search-icon"]} />
+          <image
+            iconName="system-search-symbolic"
+            cssClasses={["search-icon"]}
+          />
           <entry
-            setup={(self: Gtk.Entry) => { searchentry = self }}
-            onNotifyText={({ text }) => search(text)}
+            setup={(self: Gtk.Entry) => {
+              searchentry = self;
+            }}
+            onNotifyText={({ text }) => refresh(text)}
             placeholderText="Search applications..."
-            onActivate={() => launch(state.get().items[0])}
+            onActivate={() => launch(items.get()[0])}
             hexpand
           />
         </box>
-        <box vertical cssClasses={["results"]}>
-          {Array.from({ length: MAX_RESULTS }, (_, i) => AppSlot(i))}
-          <revealer
+        <scrolledwindow
+          hscrollbarPolicy={Gtk.PolicyType.NEVER}
+          vscrollbarPolicy={Gtk.PolicyType.AUTOMATIC}
+          heightRequest={520}
+        >
+          <box vertical cssClasses={["results"]}>
+            {items((list) => list.map((app, i) => renderItem(app, i)))}
+          </box>
+        </scrolledwindow>
+        <revealer
+          hexpand
+          transitionType={Gtk.RevealerTransitionType.CROSSFADE}
+          transitionDuration={120}
+          revealChild={showNoResults((v) => v)}
+        >
+          <label
+            cssClasses={["no-results"]}
+            label="No results"
+            halign={Gtk.Align.CENTER}
             hexpand
-            transitionType={Gtk.RevealerTransitionType.CROSSFADE}
-            transitionDuration={120}
-            revealChild={state((s) => s.items.length === 0 && s.query !== "")}
-          >
-            <label
-              cssClasses={["no-results"]}
-              label="No results"
-              halign={Gtk.Align.CENTER}
-              hexpand
-            />
-          </revealer>
-        </box>
+          />
+        </revealer>
       </box>
     </window>
-  ) as Astal.Window
+  ) as Astal.Window;
 
-  // keyboard handler
-  const keyController = new Gtk.EventControllerKey()
-  keyController.connect("key-pressed", (
-    _self: Gtk.EventControllerKey,
-    keyval: number,
-    _keycode: number,
-    modState: number,
-  ) => {
-    if (keyval === Gdk.KEY_Escape) {
-      hide()
-      return true
-    }
-
-    // Alt+N to launch Nth result
-    if (modState & Gdk.ModifierType.ALT_MASK) {
-      const num = keyval - Gdk.KEY_1
-      if (num >= 0 && num <= 8) {
-        launch(state.get().items[num])
-        return true
+  const keyController = new Gtk.EventControllerKey();
+  keyController.connect(
+    "key-pressed",
+    (
+      _self: Gtk.EventControllerKey,
+      keyval: number,
+      _keycode: number,
+      modState: number,
+    ) => {
+      if (keyval === Gdk.KEY_Escape) {
+        hide();
+        return true;
       }
-    }
+      if (modState & Gdk.ModifierType.ALT_MASK) {
+        const num = keyval - Gdk.KEY_1;
+        if (num >= 0 && num <= 8) {
+          launch(items.get()[num]);
+          return true;
+        }
+      }
+      return false;
+    },
+  );
+  win.add_controller(keyController);
 
-    return false
-  })
-  win.add_controller(keyController)
+  const click = new Gtk.GestureClick();
+  click.connect("pressed", () => {
+    hide();
+  });
+  win.add_controller(click);
 
-  // click outside to close
-  const click = new Gtk.GestureClick()
-  click.connect("pressed", () => { hide() })
-  win.add_controller(click)
-
-  return win
+  return win;
 }

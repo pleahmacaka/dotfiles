@@ -73,6 +73,7 @@
     usbutils
     rustdesk-flutter
     bitwarden-desktop
+    cifs-utils
   ];
 
   i18n.inputMethod = {
@@ -142,6 +143,12 @@
   services.dbus.enable = true;
   services.gnome.gnome-keyring.enable = true;
   security.pam.services.sddm.enableGnomeKeyring = true;
+
+  # USB auto-mount + nautilus filesystem access (smb://, sftp://, mtp://, ...).
+  services.udisks2.enable = true;
+  services.gvfs.enable = true;
+  # WS-Discovery so Windows hosts show up in nautilus' Network sidebar.
+  services.samba-wsdd.enable = true;
 
   services.tailscale.enable = true;
 
