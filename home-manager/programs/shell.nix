@@ -32,6 +32,8 @@ in
       try = testCmd;
       reload = "${testCmd} && (pkill -f 'gjs.*ags.js'; hyprctl dispatch exec 'ags run --gtk4')";
       claude = "claude --dangerously-skip-permissions";
+      cc = "claude --dangerously-skip-permissions";
+      zed = "zeditor";
       claude-local = "$HOME/.local/bin/claude-local";
       neofetch = "fastfetch";
       notify = "notify-send";
