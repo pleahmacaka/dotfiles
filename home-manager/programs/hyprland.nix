@@ -12,6 +12,9 @@ in
       env = [
         "LIBVA_DRIVER_NAME,radeonsi"
         "__GLX_VENDOR_LIBRARY_NAME,mesa"
+        "GTK_IM_MODULE,kime"
+        "QT_IM_MODULE,kime"
+        "XMODIFIERS,@im=kime"
       ];
 
       monitor =
@@ -71,7 +74,7 @@ in
         natural_scroll = false;
         repeat_delay = 150;
         repeat_rate = 50;
-        kb_options = "korean:ralt_hangul,korean:rctrl_hanja";
+        kb_options = "korean:ralt:hangul,korean:rctrl_hanja";
         touchpad = {
           natural_scroll = true;
           scroll_factor = 0.3;
@@ -91,12 +94,50 @@ in
         "match:namespace ^(notifications)$, blur 1, ignore_alpha 0.4"
       ];
 
+      "windowrule[]" = [
+        "float, class:^(scrcpy)$"
+        "size 432 936, class:^(scrcpy)$"
+        "center, class:^(scrcpy)$"
+        "pin, class:^(scrcpy)$"
+
+        "float, title:^(Open File)(.*)$"
+        "float, title:^(Save File)(.*)$"
+        "float, title:^(Save As)(.*)$"
+        "float, title:^(Open)(.*)$"
+        "float, title:^(Select a File)(.*)$"
+        "float, title:^(Choose Files)(.*)$"
+        "float, title:^(File Upload)(.*)$"
+        "float, title:^(Library)(.*)$"
+        "float, class:^(xdg-desktop-portal-gtk)$"
+        "float, class:^(xdg-desktop-portal-hyprland)$"
+        "float, class:^(org.freedesktop.impl.portal.desktop.gtk)$"
+        "float, class:^(org.gnome.FileRoller)$"
+        "float, class:^(file-roller)$"
+        "float, class:^(pavucontrol)$"
+        "float, class:^(nm-connection-editor)$"
+        "float, class:^(blueman-manager)$"
+        "float, title:^(Picture-in-Picture)$"
+        "float, title:^(.*)(Bitwarden)(.*)$"
+
+        "center, title:^(Open File)(.*)$"
+        "center, title:^(Save File)(.*)$"
+        "center, title:^(Save As)(.*)$"
+        "center, title:^(Open)(.*)$"
+        "center, title:^(Select a File)(.*)$"
+        "center, title:^(Choose Files)(.*)$"
+        "center, title:^(File Upload)(.*)$"
+        "center, class:^(xdg-desktop-portal-gtk)$"
+      ];
+
       bind = [
         "SUPER, T, exec, ghostty"
+        "SUPER, E, exec, nautilus"
         "SUPER, Q, killactive"
 
         "SUPER SHIFT, S, exec, hyprshot -m region --freeze --clipboard-only --silent"
         "SUPER, V, exec, ags request clipboard-toggle"
+
+        "SUPER, P, togglefloating,"
 
         "SUPER, 1, workspace, 1"
         "SUPER, 2, workspace, 2"

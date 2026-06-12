@@ -100,7 +100,7 @@
 
   environment.systemPackages = with pkgs; [
     waybar
-    (brave.override { commandLineArgs = "--password-store=gnome-libsecret --ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --disable-features=WaylandColorManagementV1"; })
+    (brave.override { commandLineArgs = "--password-store=gnome-libsecret --ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --disable-features=WaylandColorManagementV1 --enable-wayland-ime"; })
     zed-editor
     tailscale
     claude-code
@@ -113,8 +113,6 @@
     rustdesk-flutter
     python313Packages.huggingface-hub
     usbutils
-    unzip
-    wget
   ];
 
   i18n.inputMethod = {

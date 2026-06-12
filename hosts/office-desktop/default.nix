@@ -2,8 +2,14 @@
 
 {
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.systemd-boot = {
+  boot.loader.efi.efiSysMountPoint = "/boot/efi";
+  boot.loader.systemd-boot.enable = false;
+  boot.loader.grub = {
     enable = true;
+    device = "nodev";
+    efiSupport = true;
+    efiInstallAsRemovable = false;
+    useOSProber = true;
     configurationLimit = 10;
   };
   boot.loader.timeout = 1;
@@ -61,13 +67,16 @@
       xdg-desktop-portal-hyprland
       xdg-desktop-portal-gtk
     ];
-    config.common.default = "hyprland";
+    config.common = {
+      default = "hyprland";
+      "org.freedesktop.impl.portal.Settings" = [ "gtk" ];
+    };
   };
 
   environment.systemPackages = with pkgs; [
     waybar
     (brave.override {
-      commandLineArgs = "--password-store=gnome-libsecret --ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --disable-features=WaylandColorManagementV1";
+      commandLineArgs = "--password-store=gnome-libsecret --ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --disable-features=WaylandColorManagementV1 --enable-wayland-ime";
     })
     zed-editor
     tailscale
@@ -79,10 +88,12 @@
     obs-studio
     python313Packages.huggingface-hub
     usbutils
-    unzip
-    wget
     termius
     obsidian
+    rustdesk-flutter
+    scrcpy
+    android-tools
+    nautilus
   ];
 
   i18n.inputMethod = {

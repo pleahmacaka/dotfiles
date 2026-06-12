@@ -37,6 +37,7 @@ in
       notify = "notify-send";
       somo = "somo -l";
       ts = "tailscale";
+      mirror = "scrcpy --max-size=1080 --window-title=scrcpy";
     };
 
     oh-my-zsh = {

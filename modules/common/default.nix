@@ -61,13 +61,50 @@
   nixpkgs.overlays = [
     (self: super: {
       btop = super.btop.override { cudaSupport = true; };
+      kime = super.kime.overrideAttrs (old: rec {
+        version = "develop-0e846e1";
+        src = super.fetchFromGitHub {
+          owner = "Riey";
+          repo = "kime";
+          rev = "0e846e1ed5f31f5d53e99f7a6a84d0391c9870f2";
+          hash = "sha256-YkPW0nNa7EkzYHVdVFE7ut0NhVgGeW/E+n7uggYIIEs=";
+        };
+        cargoDeps = super.rustPlatform.fetchCargoVendor {
+          inherit src;
+          name = "kime-${version}-vendor";
+          hash = "sha256-ZgWHzXixTZWg7+2nXbw2NjeWD/cskGoZ/VSrM7vCwFs=";
+        };
+        doInstallCheck = false;
+      });
     })
   ];
 
   time.timeZone = "Asia/Seoul";
 
   programs.nix-ld.enable = true;
-  programs.neovim.enable = true;
+  programs.neovim = {
+    enable = true;
+    configure.customRC = ''
+      augroup TransparentBg
+        autocmd!
+        autocmd ColorScheme * highlight Normal       guibg=NONE ctermbg=NONE
+        autocmd ColorScheme * highlight NormalNC     guibg=NONE ctermbg=NONE
+        autocmd ColorScheme * highlight NonText      guibg=NONE ctermbg=NONE
+        autocmd ColorScheme * highlight EndOfBuffer  guibg=NONE ctermbg=NONE
+        autocmd ColorScheme * highlight SignColumn   guibg=NONE ctermbg=NONE
+        autocmd ColorScheme * highlight LineNr       guibg=NONE ctermbg=NONE
+        autocmd ColorScheme * highlight VertSplit    guibg=NONE ctermbg=NONE
+      augroup END
+
+      highlight Normal      guibg=NONE ctermbg=NONE
+      highlight NormalNC    guibg=NONE ctermbg=NONE
+      highlight NonText     guibg=NONE ctermbg=NONE
+      highlight EndOfBuffer guibg=NONE ctermbg=NONE
+      highlight SignColumn  guibg=NONE ctermbg=NONE
+      highlight LineNr      guibg=NONE ctermbg=NONE
+      highlight VertSplit   guibg=NONE ctermbg=NONE
+    '';
+  };
   programs.command-not-found.enable = false;
   programs.nix-index.enable = true;
   programs.zsh = {
@@ -136,6 +173,10 @@
     fastfetch
     axel
     somo
+    vlc
+    wget
+    zip
+    unzip
   ];
 
   security.polkit.enable = true;
