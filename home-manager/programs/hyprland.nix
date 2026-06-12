@@ -1,5 +1,10 @@
-{ ... }:
+{ osConfig, ... }:
 
+let
+  hostName = osConfig.networking.hostName;
+  isOfficeDesktop = hostName == "nixos-office-desktop";
+  isDark = hostName == "nixos-desktop";
+in
 {
   wayland.windowManager.hyprland = {
     enable = true;
@@ -9,19 +14,27 @@
         "__GLX_VENDOR_LIBRARY_NAME,mesa"
       ];
 
-      monitor = [
-        "HDMI-A-1,2560x1440@144,0x0,1"
-        "DP-1,2560x1440@144,-2560x0,1"
-      ];
+      monitor =
+        if isOfficeDesktop then
+          [
+            "HDMI-A-1,2560x1440@144,0x0,1"
+            "DP-1,2560x1440@144,-2560x0,1"
+          ]
+        else
+          [ ",preferred,auto,auto" ];
 
-      workspace = [
-        "1, monitor:HDMI-A-1, default:true, persistent:true"
-        "2, monitor:HDMI-A-1, persistent:true"
-        "3, monitor:HDMI-A-1, persistent:true"
-        "4, monitor:HDMI-A-1, persistent:true"
-        "5, monitor:HDMI-A-1, persistent:true"
-        "10, monitor:DP-1, default:true, persistent:true"
-      ];
+      workspace =
+        if isOfficeDesktop then
+          [
+            "1, monitor:HDMI-A-1, default:true, persistent:true"
+            "2, monitor:HDMI-A-1, persistent:true"
+            "3, monitor:HDMI-A-1, persistent:true"
+            "4, monitor:HDMI-A-1, persistent:true"
+            "5, monitor:HDMI-A-1, persistent:true"
+            "10, monitor:DP-1, default:true, persistent:true"
+          ]
+        else
+          [ ];
 
       general = {
         gaps_in = 4;
@@ -40,7 +53,7 @@
       misc = {
         disable_hyprland_logo = true;
         disable_splash_rendering = true;
-        background_color = "0x000000";
+        background_color = if isDark then "0x000000" else "0xece8f3";
       };
 
       animations = {

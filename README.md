@@ -24,7 +24,9 @@ sudo nixos-rebuild switch --flake .#wsl
 │   ├── programs/
 │   └── services/
 ├── hosts/
+│   ├── desktop/
 │   ├── laptop/
+│   ├── office-desktop/
 │   └── wsl/
 ├── modules/
 │   └── common/
@@ -37,6 +39,6 @@ sudo nixos-rebuild switch --flake .#wsl
     - **programs/**: Per-program configuration modules.
     - **services/**: Service configuration modules.
 - **hosts/**: Host-specific NixOS or Home Manager configurations.
-    - **laptop/**, **wsl/**: Machine-specific settings.
+    - **desktop/**, **laptop/**, **office-desktop/**, **wsl/**: Machine-specific settings.
 - **modules/**: Modular and reusable Nix configuration.
     - **common/**: Shared modules for various purposes.
