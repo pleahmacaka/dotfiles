@@ -12,7 +12,6 @@
   services.dbus.enable = true;
 
   environment.systemPackages = with pkgs; [
-    wslu # handle xdg-open stuff
     usbutils
     kmod
   ];
