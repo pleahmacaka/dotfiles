@@ -10,6 +10,9 @@
 
   boot.kernel.sysctl."vm.swappiness" = 180;
 
+  # aarch64 emulation so `just image` can build the Pi SD images locally.
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+
   networking.networkmanager.wifi.powersave = false;
 
   services.xserver.videoDrivers = [ "nvidia" ];
@@ -56,8 +59,34 @@
     HandleLidSwitchDocked = "ignore";
   };
 
+  # asusd/supergfxd: power & fan profiles, ROG Control Center GUI.
   services.asusd.enable = true;
   services.supergfxd.enable = true;
+
+  # Default AC + battery profiles to Quiet once; the stamp leaves later
+  # manual changes (e.g. via the GUI) untouched on rebuild/reboot.
+  systemd.services.asusd-default-quiet = {
+    description = "Default asusd platform profile to Quiet (once)";
+    after = [ "asusd.service" ];
+    wants = [ "asusd.service" ];
+    wantedBy = [ "multi-user.target" ];
+    path = [ config.services.asusd.package pkgs.coreutils ];
+    unitConfig.ConditionPathExists = "!/var/lib/asusd-default-quiet.stamp";
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    script = ''
+      for _ in $(seq 1 15); do
+        if asusctl profile set -a Quiet && asusctl profile set -b Quiet; then
+          touch /var/lib/asusd-default-quiet.stamp
+          exit 0
+        fi
+        sleep 2
+      done
+      echo "asusd not ready yet; will retry on next boot" >&2
+    '';
+  };
 
   networking.firewall.allowedTCPPorts = [ 25565 ];
   networking.firewall.allowedUDPPorts = [ 25565 ];
