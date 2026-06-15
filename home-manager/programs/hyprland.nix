@@ -1,11 +1,16 @@
-{ osConfig, ... }:
+{ osConfig, pkgs, ... }:
 
 let
   hostName = osConfig.networking.hostName;
   isOfficeDesktop = hostName == "nixos-office-desktop";
+  isLaptop = hostName == "nixos-laptop";
   isDark = hostName == "nixos-desktop";
+  wallpaper = if isDark then ../wallpapers/nix-dark.png else ../wallpapers/nix-bright.png;
+  isNvidia = builtins.elem "nvidia" (osConfig.services.xserver.videoDrivers or [ ]);
 in
 {
+  home.packages = [ pkgs.swaybg ];
+
   wayland.windowManager.hyprland = {
     enable = true;
     settings = {
@@ -15,6 +20,8 @@ in
         "GTK_IM_MODULE,kime"
         "QT_IM_MODULE,kime"
         "XMODIFIERS,@im=kime"
+        "XCURSOR_THEME,Adwaita"
+        "XCURSOR_SIZE,24"
       ];
 
       monitor =
@@ -22,6 +29,12 @@ in
           [
             "HDMI-A-1,2560x1440@144,0x0,1"
             "DP-1,2560x1440@144,-2560x0,1"
+          ]
+        else if isLaptop then
+          # 2560x1440 panel, scale 1.25 -> 2048x1152 logical.
+          [
+            "eDP-2,preferred,auto,1.25"
+            ",preferred,auto,auto"
           ]
         else
           [ ",preferred,auto,auto" ];
@@ -59,6 +72,11 @@ in
         background_color = if isDark then "0x000000" else "0xece8f3";
       };
 
+      cursor = {
+        # NVIDIA HW cursor often fails to update shape; software cursor is reliable.
+        no_hardware_cursors = isNvidia;
+      };
+
       animations = {
         enabled = true;
         animation = [
@@ -83,6 +101,7 @@ in
       };
 
       exec-once = [
+        "swaybg -m fill -i ${wallpaper}"
         "ags run --gtk4"
         "kime"
         "wl-paste --type text --watch cliphist store"
@@ -127,6 +146,9 @@ in
         "center, title:^(Choose Files)(.*)$"
         "center, title:^(File Upload)(.*)$"
         "center, class:^(xdg-desktop-portal-gtk)$"
+
+        # Translucent Brave (affects page content too, so keep it high).
+        "opacity 0.95 0.92, class:^(brave-browser)$"
       ];
 
       bind = [
