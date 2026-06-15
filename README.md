@@ -93,8 +93,8 @@ hosts/
 └── cluster/
     ├── common.nix               # incus, agenix, nftables
     ├── pi/                      # aarch64 (Pi 5 default)
-    ├── x86/                     # future joiners
-    └── secrets/                 # agenix recipients
+    └── x86/                     # future joiners
+secrets/                         # agenix recipients (repo-wide)
 modules/common/
 home-manager/
 ```
@@ -102,6 +102,9 @@ home-manager/
 ### Cluster
 
 ```bash
+# build a node's SD-card image (interactive)
+just image
+
 # bootstrap once, on cluster-pi-01
 sudo incus admin init
 
@@ -116,9 +119,10 @@ incus remote add home https://cluster-pi-01:8443
 <summary><b>Secrets</b></summary>
 
 ```bash
-ssh root@cluster-pi-0X cat /etc/ssh/ssh_host_ed25519_key.pub
-# paste into hosts/cluster/secrets/secrets.nix
-( cd hosts/cluster/secrets && agenix -r )
+just agenix     # interactive: register operator + host keys, then rekey
+# …or by hand:
+ssh root@cluster-pi-0X cat /etc/ssh/ssh_host_ed25519_key.pub   # -> secrets/secrets.nix
+( cd secrets && agenix -r )
 ```
 
 </details>
