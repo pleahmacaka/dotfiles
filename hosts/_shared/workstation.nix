@@ -23,9 +23,7 @@
     obsidian
     scrcpy
     android-tools
-    nautilus
     incus
-    agenix
   ];
 
   users.users.pleahmacaka.extraGroups = [ "networkmanager" ];

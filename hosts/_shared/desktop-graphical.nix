@@ -73,8 +73,13 @@
     usbutils
     rustdesk-flutter
     bitwarden-desktop
+    nautilus
     cifs-utils
+    agenix
   ];
+
+  # `zed` -> `zeditor`, only on hosts that ship Zed (above).
+  environment.shellAliases.zed = "zeditor";
 
   i18n.inputMethod = {
     enable = true;

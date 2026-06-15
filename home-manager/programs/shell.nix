@@ -33,7 +33,7 @@ in
       reload = "${testCmd} && (pkill -f 'gjs.*ags.js'; hyprctl dispatch exec 'ags run --gtk4')";
       claude = "claude --dangerously-skip-permissions";
       cc = "claude --dangerously-skip-permissions";
-      zed = "zeditor";
+      # `zed` -> `zeditor` alias lives in hosts/_shared/desktop-graphical.nix.
       claude-local = "$HOME/.local/bin/claude-local";
       neofetch = "fastfetch";
       notify = "notify-send";
