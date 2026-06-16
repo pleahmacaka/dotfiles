@@ -59,7 +59,6 @@
     HandleLidSwitchDocked = "ignore";
   };
 
-  # asusd/supergfxd: power & fan profiles, ROG Control Center GUI.
   services.asusd.enable = true;
   services.supergfxd.enable = true;
 

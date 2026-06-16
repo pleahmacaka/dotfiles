@@ -68,7 +68,6 @@
     vesktop
     wl-clipboard
     cliphist
-    hyprshot
     obs-studio
     python313Packages.huggingface-hub
     usbutils
@@ -79,8 +78,7 @@
     agenix
   ];
 
-  # `zed` -> `zeditor`, only on hosts that ship Zed (above).
-  environment.shellAliases.zed = "zeditor";
+  environment.shellAliases.zed = "SHELL=$(getent passwd $USER | cut -d: -f7) zeditor";
 
   i18n.inputMethod = {
     enable = true;
@@ -144,13 +142,10 @@
     };
   };
 
-  programs.zsh.enable = true;
-
   services.dbus.enable = true;
   services.gnome.gnome-keyring.enable = true;
   security.pam.services.sddm.enableGnomeKeyring = true;
 
-  # USB auto-mount + nautilus filesystem access (smb://, sftp://, mtp://, ...).
   services.udisks2.enable = true;
   services.gvfs.enable = true;
   # WS-Discovery so Windows hosts show up in nautilus' Network sidebar.

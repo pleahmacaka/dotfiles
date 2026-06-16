@@ -54,7 +54,7 @@
       # to the dotfiles' nixpkgs (26.05) so all hosts share one channel.
       # nixos-raspberrypi still injects its rpi kernel/firmware overlays.
       mkClusterPi =
-        { hostname, modules ? [ ] }:
+        { hostname }:
         nixos-raspberrypi.lib.nixosSystem {
           inherit nixpkgs;
           system = "aarch64-linux";
@@ -65,8 +65,7 @@
             ./hosts/cluster/common.nix
             ./hosts/cluster/pi/common.nix
             { networking.hostName = hostname; }
-          ]
-          ++ modules;
+          ];
         };
 
       piHostNames = [ "pi-01" "pi-02" "pi-03" "pi-04" "pi-05" ];
@@ -105,14 +104,14 @@
         office-desktop = mkNixosConfig {
           hostname = "nixos-office-desktop";
           modules = [
-            ./hosts/office-desktop/default.nix
+            ./hosts/_shared/workstation.nix
             ./hosts/office-desktop/hardware-configuration.nix
           ];
         };
         desktop = mkNixosConfig {
           hostname = "nixos-desktop";
           modules = [
-            ./hosts/desktop/default.nix
+            ./hosts/_shared/workstation.nix
             ./hosts/desktop/hardware-configuration.nix
           ];
         };
