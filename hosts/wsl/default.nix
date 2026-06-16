@@ -1,8 +1,6 @@
-{ lib, pkgs, ... }:
+{ lib, pkgs, wuw, ... }:
 
 {
-  imports = [ ../../modules/wuw.nix ];
-
   # assign true in flake.nix
   wsl.enable = lib.mkDefault false;
   wsl.defaultUser = "pleahmacaka";
@@ -12,6 +10,7 @@
   services.dbus.enable = true;
 
   environment.systemPackages = with pkgs; [
+    wuw
     usbutils
     kmod
   ];

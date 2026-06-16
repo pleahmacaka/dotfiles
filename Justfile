@@ -7,7 +7,7 @@ agenix:
     #!/usr/bin/env bash
     set -euo pipefail
     rules="secrets/secrets.nix"
-    [[ -f "$rules" ]] || { echo "✗ $rules not found — run from the repo root."; exit 1; }
+    [[ -f "$rules" ]] || { echo "✗ $rules not found - run from the repo root."; exit 1; }
 
     # Write a `name = "<pubkey>";` recipient line in the rules file.
     set_key() {
@@ -17,7 +17,7 @@ agenix:
         sed -i "s|^  ${var} = .*|  ${var} = \"${key}\";|" "$rules"
         echo "  ✓ ${var}"
       else
-        echo "  ! no '${var}' field in $rules — skipped"
+        echo "  ! no '${var}' field in $rules - skipped"
       fi
     }
 
@@ -46,7 +46,7 @@ agenix:
     read -rp "Fetch host keys from remote machines over SSH? [y/N] " a
     if [[ "$a" =~ ^[Yy]$ ]]; then
       while true; do
-        read -rp "  rules var (e.g. desktop, pi-01) — blank to stop: " var
+        read -rp "  rules var (e.g. desktop, pi-01) - blank to stop: " var
         [[ -z "$var" ]] && break
         read -rp "  ssh target for '$var' (e.g. root@cluster-pi-01): " tgt
         [[ -z "$tgt" ]] && continue
@@ -67,7 +67,7 @@ agenix:
 
     echo; echo "== recipients now in $rules =="
     grep -nE '^  [a-z0-9-]+ = "ssh-' "$rules" || true
-    echo; echo "Still unset:"; grep -n REPLACE_ME "$rules" || echo "  (none — all filled)"
+    echo; echo "Still unset:"; grep -n REPLACE_ME "$rules" || echo "  (none - all filled)"
 
 # Build a cluster node's SD-card image interactively.
 image:

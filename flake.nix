@@ -34,7 +34,7 @@
           inherit system;
           specialArgs = extraArgs // { inherit inputs; };
           modules = [
-            ./modules/default.nix
+            ./modules/common
             determinate.nixosModules.default
             home-manager.nixosModules.home-manager
             agenix.nixosModules.default
@@ -50,7 +50,7 @@
           ++ modules;
         };
 
-      # Pi cluster nodes — built via nixos-raspberrypi's wrapper but pinned
+      # Pi cluster nodes - built via nixos-raspberrypi's wrapper but pinned
       # to the dotfiles' nixpkgs (26.05) so all hosts share one channel.
       # nixos-raspberrypi still injects its rpi kernel/firmware overlays.
       mkClusterPi =
@@ -69,30 +69,12 @@
           ++ modules;
         };
 
-      # x86 cluster nodes — same nixosConfigurations attrset, different builder.
-      # Use this when joining an x86 node to the cluster later.
-      mkClusterX86 =
-        { hostname, modules ? [ ] }:
-        nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          specialArgs = { inherit inputs; };
-          modules = [
-            agenix.nixosModules.default
-            { nixpkgs.overlays = [ agenix.overlays.default ]; }
-            ./hosts/cluster/common.nix
-            ./hosts/cluster/x86/common.nix
-            { networking.hostName = hostname; }
-          ]
-          ++ modules;
-        };
-
       piHostNames = [ "pi-01" "pi-02" "pi-03" "pi-04" "pi-05" ];
       piConfigs = builtins.listToAttrs (map
         (name: {
           name = "cluster-${name}";
           value = mkClusterPi {
             hostname = "cluster-${name}";
-            modules = [ ./hosts/cluster/pi/${name}.nix ];
           };
         })
         piHostNames);

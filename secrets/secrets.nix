@@ -3,7 +3,7 @@
 #   edit/rekey: cd secrets && agenix -e <name>.age  /  agenix -r
 #   consume:    age.secrets.<name>.file = ../../secrets/<name>.age;
 let
-  # Operator key (~/.ssh/id_ed25519.pub) — edits secrets.
+  # Operator key (~/.ssh/id_ed25519.pub) - edits secrets.
   operator = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzV65BUPEPNJqW5FvcxOiYu8zN4TDC6fKzGtQFCJEfk pleahmacaka@nixos-laptop";
   operators = [ operator ];
 

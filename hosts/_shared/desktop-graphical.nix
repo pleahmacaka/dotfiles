@@ -64,6 +64,7 @@
     zed-editor
     tailscale
     claude-code
+    opencode
     vesktop
     wl-clipboard
     cliphist
