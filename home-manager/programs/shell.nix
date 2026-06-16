@@ -6,6 +6,19 @@ let
   switchCmd = "${nhEnv} nh os switch -H ${flakeAttr}";
   testCmd = "${nhEnv} nh os test -H ${flakeAttr}";
   switchCleanCmd = "${nhEnv} nh clean all --keep 5 && rm -rf $HOME/.cache/nix && ${switchCmd}";
+
+  # The plugin hardcodes /usr/bin/stat, which doesn't exist on NixOS. Point it at coreutils.
+  autoswitchSrc = pkgs.runCommandLocal "zsh-autoswitch-virtualenv-3.7.1" { } ''
+    cp -r ${pkgs.fetchFromGitHub {
+      owner = "MichaelAquilina";
+      repo = "zsh-autoswitch-virtualenv";
+      rev = "3.7.1";
+      sha256 = "sha256-hwg9wDMU2XqJ5FQEwMVVaz0n+xZ8NI82tH9VhLfFRC4=";
+    }} $out
+    chmod -R +w $out
+    substituteInPlace $out/autoswitch_virtualenv.plugin.zsh \
+      --replace-fail /usr/bin/stat ${pkgs.coreutils}/bin/stat
+  '';
 in
 {
   programs.nh = {
@@ -22,6 +35,9 @@ in
     initContent = ''
       bright() { brightnessctl set "$1%"; }
       export PATH="$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"
+      # Default fg=8 (dim gray) shimmers over the translucent/blurred terminal
+      # background; a brighter opaque color keeps glyph edges crisp.
+      export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#7f849c'
     '';
 
     shellAliases = {
@@ -30,10 +46,9 @@ in
       switch = switchCmd;
       switch-clean = switchCleanCmd;
       try = testCmd;
-      reload = "${testCmd} && (pkill -f 'gjs.*ags.js'; hyprctl dispatch exec 'ags run --gtk4')";
+      reload = "${testCmd} && systemctl --user restart quickshell.service";
       claude = "claude --dangerously-skip-permissions";
       cc = "claude --dangerously-skip-permissions";
-      # `zed` -> `zeditor` alias lives in hosts/_shared/desktop-graphical.nix.
       claude-local = "$HOME/.local/bin/claude-local";
       neofetch = "fastfetch";
       notify = "notify-send";
@@ -53,12 +68,7 @@ in
     plugins = [
       {
         name = "zsh-autoswitch-virtualenv";
-        src = pkgs.fetchFromGitHub {
-          owner = "MichaelAquilina";
-          repo = "zsh-autoswitch-virtualenv";
-          rev = "3.7.1";
-          sha256 = "sha256-hwg9wDMU2XqJ5FQEwMVVaz0n+xZ8NI82tH9VhLfFRC4=";
-        };
+        src = autoswitchSrc;
         file = "autoswitch_virtualenv.plugin.zsh";
       }
       {

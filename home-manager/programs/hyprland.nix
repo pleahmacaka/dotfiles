@@ -7,6 +7,19 @@ let
   isDark = hostName == "nixos-desktop";
   wallpaper = if isDark then ../wallpapers/nix-dark.png else ../wallpapers/nix-bright.png;
   isNvidia = builtins.elem "nvidia" (osConfig.services.xserver.videoDrivers or [ ]);
+
+  # 소프트웨어 커서(nvidia no_hardware_cursors) 환경에서 grim 이 커서를 합성하는 문제 회피:
+  # 영역 선택 동안엔 커서를 보이게 두고, grim 캡처 순간에만 cursor:invisible 로 숨김.
+  screenshot = pkgs.writeShellScript "screenshot-region" ''
+    ${pkgs.hyprpicker}/bin/hyprpicker -r -z &
+    picker=$!
+    sleep 0.2
+    geom=$(${pkgs.slurp}/bin/slurp) || { kill $picker 2>/dev/null; exit 1; }
+    hyprctl keyword cursor:invisible true
+    ${pkgs.grim}/bin/grim -g "$geom" - | ${pkgs.wl-clipboard}/bin/wl-copy --type image/png
+    hyprctl keyword cursor:invisible false
+    kill $picker 2>/dev/null
+  '';
 in
 {
   home.packages = [ pkgs.swaybg ];
@@ -31,7 +44,6 @@ in
             "DP-1,2560x1440@144,-2560x0,1"
           ]
         else if isLaptop then
-          # 2560x1440 panel, scale 1.25 -> 2048x1152 logical.
           [
             "eDP-2,preferred,auto,1.25"
             ",preferred,auto,auto"
@@ -102,7 +114,6 @@ in
 
       exec-once = [
         "swaybg -m fill -i ${wallpaper}"
-        "ags run --gtk4"
         "kime"
         "wl-paste --type text --watch cliphist store"
         "wl-paste --type image --watch cliphist store"
@@ -147,7 +158,7 @@ in
         "center, title:^(File Upload)(.*)$"
         "center, class:^(xdg-desktop-portal-gtk)$"
 
-        # Translucent Brave (affects page content too, so keep it high).
+        # opacity affects page content too, so keep it high.
         "opacity 0.95 0.92, class:^(brave-browser)$"
       ];
 
@@ -156,8 +167,8 @@ in
         "SUPER, E, exec, nautilus"
         "SUPER, Q, killactive"
 
-        "SUPER SHIFT, S, exec, hyprshot -m region --freeze --clipboard-only --silent"
-        "SUPER, V, exec, ags request clipboard-toggle"
+        "SUPER SHIFT, S, exec, ${screenshot}"
+        "SUPER, V, exec, qs ipc call shell toggleClipboard"
 
         "SUPER, P, togglefloating,"
 
@@ -180,7 +191,7 @@ in
       ];
 
       bindr = [
-        "SUPER, SUPER_L, exec, ags request toggle"
+        "SUPER, SUPER_L, exec, qs ipc call shell toggleLauncher"
       ];
 
       bindm = [
