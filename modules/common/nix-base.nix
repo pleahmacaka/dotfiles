@@ -1,7 +1,5 @@
 { ... }:
 
-# Shared low-level nix/DNS settings for every host (desktop + cluster).
-# Host-specific substituters (e.g. hyprland) are appended in the importing module.
 {
   nix.settings = {
     experimental-features = [

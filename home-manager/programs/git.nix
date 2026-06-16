@@ -10,7 +10,6 @@
       gitCredentialHelper = {
         enable = true;
       };
-      # for `github authentication, use 'gh auth login'`
       credential = {
         "https://github.com" = {
           helper = "!gh auth git-credential";

@@ -7,7 +7,6 @@ let
   colorScheme = if isDark then "prefer-dark" else "prefer-light";
 in
 {
-  # Cursor theme so apps get proper shapes on hover/text/resize.
   home.pointerCursor = {
     name = "Adwaita";
     package = pkgs.adwaita-icon-theme;

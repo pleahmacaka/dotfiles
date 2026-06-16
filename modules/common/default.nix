@@ -7,7 +7,6 @@
     ./users.nix
   ];
 
-  # Desktop-only caches, appended to the base substituters in nix-base.nix.
   nix.settings = {
     eval-cache = true;
 
@@ -58,17 +57,6 @@
   programs.neovim = {
     enable = true;
     configure.customRC = ''
-      augroup TransparentBg
-        autocmd!
-        autocmd ColorScheme * highlight Normal       guibg=NONE ctermbg=NONE
-        autocmd ColorScheme * highlight NormalNC     guibg=NONE ctermbg=NONE
-        autocmd ColorScheme * highlight NonText      guibg=NONE ctermbg=NONE
-        autocmd ColorScheme * highlight EndOfBuffer  guibg=NONE ctermbg=NONE
-        autocmd ColorScheme * highlight SignColumn   guibg=NONE ctermbg=NONE
-        autocmd ColorScheme * highlight LineNr       guibg=NONE ctermbg=NONE
-        autocmd ColorScheme * highlight VertSplit    guibg=NONE ctermbg=NONE
-      augroup END
-
       highlight Normal      guibg=NONE ctermbg=NONE
       highlight NormalNC    guibg=NONE ctermbg=NONE
       highlight NonText     guibg=NONE ctermbg=NONE
@@ -79,7 +67,6 @@
     '';
   };
   programs.command-not-found.enable = false;
-  programs.nix-index.enable = false;
   programs.zsh = {
     enable = true;
     shellAliases = {
@@ -110,6 +97,9 @@
     openFirewall = true;
   };
 
+  services.printing.enable = true;
+  services.printing.drivers = [ pkgs.gutenprint ];
+
   environment.pathsToLink = [
     "/share/applications"
     "/share/xdg-desktop-portal"
@@ -118,7 +108,6 @@
   environment.systemPackages = with pkgs; [
     git
     gh
-    neovim
     btop
     bat
     tree
