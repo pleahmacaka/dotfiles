@@ -1,8 +1,20 @@
-import { App, Astal, Gtk, Gdk } from "astal/gtk4";
+import {
+  App,
+  Astal,
+  Gtk,
+  Gdk,
+  astalify,
+  type ConstructProps,
+} from "astal/gtk4";
 import { Variable } from "astal";
 import AstalApps from "gi://AstalApps";
 
 const { TOP, BOTTOM, LEFT, RIGHT } = Astal.WindowAnchor;
+
+const ScrolledWindow = astalify<
+  Gtk.ScrolledWindow,
+  ConstructProps<Gtk.ScrolledWindow, Gtk.ScrolledWindow.ConstructorProps>
+>(Gtk.ScrolledWindow);
 
 const SEARCH_LIMIT = 30;
 const KEY_LIMIT = 9;
@@ -122,7 +134,7 @@ export default function Applauncher() {
             hexpand
           />
         </box>
-        <scrolledwindow
+        <ScrolledWindow
           hscrollbarPolicy={Gtk.PolicyType.NEVER}
           vscrollbarPolicy={Gtk.PolicyType.AUTOMATIC}
           heightRequest={520}
@@ -130,7 +142,7 @@ export default function Applauncher() {
           <box vertical cssClasses={["results"]}>
             {items((list) => list.map((app, i) => renderItem(app, i)))}
           </box>
-        </scrolledwindow>
+        </ScrolledWindow>
         <revealer
           hexpand
           transitionType={Gtk.RevealerTransitionType.CROSSFADE}
