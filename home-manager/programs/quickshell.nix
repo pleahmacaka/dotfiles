@@ -66,6 +66,10 @@ in
       ];
       ExecStart = "${pkgs.quickshell}/bin/qs";
       Restart = "on-failure";
+      # Launcher-spawned apps (brave/vesktop) inherit this unit's cgroup, so the
+      # default control-group kill takes them down on `reload`/switch restarts.
+      # KillMode=process signals only qs; the launched apps survive (reparented).
+      KillMode = "process";
     };
   };
 

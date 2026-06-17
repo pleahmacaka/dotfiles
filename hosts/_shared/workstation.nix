@@ -16,8 +16,6 @@
 
   boot.kernel.sysctl."vm.swappiness" = 10;
 
-  xdg.portal.config.common."org.freedesktop.impl.portal.Settings" = [ "gtk" ];
-
   environment.systemPackages = with pkgs; [
     termius
     obsidian

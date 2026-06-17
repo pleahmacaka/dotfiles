@@ -53,6 +53,10 @@ in
       neofetch = "fastfetch";
       notify = "notify-send";
       somo = "somo -l";
+      # Flip GTK/Qt color-scheme + theme together at runtime (no rebuild);
+      # flipping only color-scheme leaves gtk-theme stale = half-themed apps.
+      dark = "dconf write /org/gnome/desktop/interface/color-scheme \"'prefer-dark'\" && dconf write /org/gnome/desktop/interface/gtk-theme \"'Adwaita-dark'\"";
+      white = "dconf write /org/gnome/desktop/interface/color-scheme \"'prefer-light'\" && dconf write /org/gnome/desktop/interface/gtk-theme \"'Adwaita'\"";
       ts = "tailscale";
       mirror = "scrcpy --max-size=1080 --window-title=scrcpy";
     };

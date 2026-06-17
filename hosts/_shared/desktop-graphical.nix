@@ -53,7 +53,12 @@
       xdg-desktop-portal-hyprland
       xdg-desktop-portal-gtk
     ];
-    config.common.default = "hyprland";
+    config.common = {
+      default = "hyprland";
+      # Pin GTK as the appearance backend so apps follow the dconf color-scheme
+      # (dark/white toggle); the hyprland backend doesn't implement Settings.
+      "org.freedesktop.impl.portal.Settings" = [ "gtk" ];
+    };
   };
 
   environment.systemPackages = with pkgs; [

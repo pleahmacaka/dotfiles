@@ -38,6 +38,10 @@ in
     "org/gnome/desktop/interface" = {
       color-scheme = colorScheme;
       gtk-theme = gtkTheme;
+      # GTK re-reads gsettings on a color-scheme change and, if this is unset,
+      # overrides the GTK_IM_MODULE env with empty — dropping kime on dark↔light
+      # toggle. Pin it so Korean input survives the switch.
+      gtk-im-module = "kime";
     };
   };
 }

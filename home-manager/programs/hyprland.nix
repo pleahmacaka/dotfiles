@@ -8,21 +8,10 @@ let
   wallpaper = if isDark then ../wallpapers/nix-dark.png else ../wallpapers/nix-bright.png;
   isNvidia = builtins.elem "nvidia" (osConfig.services.xserver.videoDrivers or [ ]);
 
-  # 소프트웨어 커서(nvidia no_hardware_cursors) 환경에서 grim 이 커서를 합성하는 문제 회피:
-  # 영역 선택 동안엔 커서를 보이게 두고, grim 캡처 순간에만 cursor:invisible 로 숨김.
-  screenshot = pkgs.writeShellScript "screenshot-region" ''
-    ${pkgs.hyprpicker}/bin/hyprpicker -r -z &
-    picker=$!
-    sleep 0.2
-    geom=$(${pkgs.slurp}/bin/slurp) || { kill $picker 2>/dev/null; exit 1; }
-    hyprctl keyword cursor:invisible true
-    ${pkgs.grim}/bin/grim -g "$geom" - | ${pkgs.wl-clipboard}/bin/wl-copy --type image/png
-    hyprctl keyword cursor:invisible false
-    kill $picker 2>/dev/null
-  '';
+  hyprshot = "${pkgs.hyprshot}/bin/hyprshot";
 in
 {
-  home.packages = [ pkgs.swaybg ];
+  home.packages = [ pkgs.swaybg pkgs.hyprshot ];
 
   wayland.windowManager.hyprland = {
     enable = true;
@@ -102,7 +91,7 @@ in
       input = {
         sensitivity = -0.17;
         natural_scroll = false;
-        repeat_delay = 150;
+        repeat_delay = 250;
         repeat_rate = 50;
         kb_options = "korean:ralt:hangul,korean:rctrl_hanja";
         touchpad = {
@@ -167,7 +156,8 @@ in
         "SUPER, E, exec, nautilus"
         "SUPER, Q, killactive"
 
-        "SUPER SHIFT, S, exec, ${screenshot}"
+        "SUPER SHIFT, S, exec, ${hyprshot} -m region --clipboard-only --freeze"
+        "SUPER SHIFT, W, exec, ${hyprshot} -m window --clipboard-only --freeze"
         "SUPER, V, exec, qs ipc call shell toggleClipboard"
 
         "SUPER, P, togglefloating,"
