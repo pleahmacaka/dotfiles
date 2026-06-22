@@ -1,5 +1,23 @@
-{ pkgs, ... }:
+{ pkgs, config, ... }:
 
+let
+  # Termius' bundled Electron ignores Wayland and renders blurry via XWayland
+  # under the laptop's 1.25 fractional scale. Force its internal device scale
+  # to match (paired with hyprland xwayland.force_zero_scaling).
+  termius =
+    if config.networking.hostName == "nixos-laptop" then
+      pkgs.symlinkJoin {
+        name = "termius-scaled";
+        paths = [ pkgs.termius ];
+        nativeBuildInputs = [ pkgs.makeWrapper ];
+        postBuild = ''
+          wrapProgram $out/bin/termius-app \
+            --add-flags "--force-device-scale-factor=1.25"
+        '';
+      }
+    else
+      pkgs.termius;
+in
 {
   # bitwarden-desktop currently depends on electron-39, which nixpkgs marks insecure.
   nixpkgs.config.permittedInsecurePackages = [ "electron-39.8.10" ];
@@ -71,6 +89,7 @@
     claude-code
     opencode
     vesktop
+    termius
     wl-clipboard
     cliphist
     obs-studio
@@ -79,11 +98,20 @@
     rustdesk-flutter
     bitwarden-desktop
     nautilus
+    libreoffice-fresh
     cifs-utils
     agenix
   ];
 
   environment.shellAliases.zed = "SHELL=$(getent passwd $USER | cut -d: -f7) zeditor";
+
+  # Electron apps default to XWayland → blurry on HiDPI. NIXOS_OZONE_WL only
+  # reaches nixpkgs-wrapped electron; termius ships a prebuilt binary, so it
+  # needs the upstream ELECTRON_OZONE_PLATFORM_HINT too.
+  environment.sessionVariables = {
+    NIXOS_OZONE_WL = "1";
+    ELECTRON_OZONE_PLATFORM_HINT = "wayland";
+  };
 
   i18n.inputMethod = {
     enable = true;
@@ -99,6 +127,10 @@
         engine:
           hangul:
             layout: dubeolsik
+            layout_addons:
+              all: []
+              dubeolsik:
+                - TreatJongseongAsChoseong
           global_hotkeys:
             AltR:
               behavior: !Toggle
@@ -150,6 +182,33 @@
   services.dbus.enable = true;
   services.gnome.gnome-keyring.enable = true;
   security.pam.services.sddm.enableGnomeKeyring = true;
+
+  # Office Canon iR-ADV C3530i @ 192.168.0.100. The printer has IPP (631) closed
+  # and doesn't advertise mDNS — only raw AppSocket (9100) is open — so it's
+  # pinned by IP with Canon's official UFR II driver (its native PDL; generic
+  # PostScript/PCL produced no output). The socket URI + static PPD means
+  # lpadmin never contacts the printer at rebuild, so switches still succeed off
+  # the office LAN (roaming laptop).
+  services.printing = {
+    enable = true;
+    drivers = [ pkgs.canon-cups-ufr2 ];
+  };
+  hardware.printers = {
+    ensureDefaultPrinter = "Canon_C3530";
+    ensurePrinters = [
+      {
+        name = "Canon_C3530";
+        location = "Office";
+        deviceUri = "socket://192.168.0.100:9100";
+        model = "CNRCUPSIR3530ZK.ppd";
+      }
+    ];
+  };
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    openFirewall = true;
+  };
 
   services.udisks2.enable = true;
   services.gvfs.enable = true;

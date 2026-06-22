@@ -1,6 +1,10 @@
 {
   programs.git = {
     enable = true;
+    ignores = [
+      ".omo"
+      ".claude"
+    ];
     settings = {
       user = {
         name = "PleahMaCaka";

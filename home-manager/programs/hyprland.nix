@@ -16,6 +16,11 @@ in
   wayland.windowManager.hyprland = {
     enable = true;
     settings = {
+      # Laptop runs fractional 1.25 scale; XWayland apps (termius, FreeRDP)
+      # blur when the compositor upscales them. Render them at native pixels
+      # instead so they stay sharp.
+      xwayland.force_zero_scaling = isLaptop;
+
       env = [
         "LIBVA_DRIVER_NAME,radeonsi"
         "__GLX_VENDOR_LIBRARY_NAME,mesa"
@@ -92,7 +97,7 @@ in
         sensitivity = -0.17;
         natural_scroll = false;
         repeat_delay = 250;
-        repeat_rate = 50;
+        repeat_rate = 40;
         kb_options = "korean:ralt:hangul,korean:rctrl_hanja";
         touchpad = {
           natural_scroll = true;

@@ -7,7 +7,6 @@ let
   testCmd = "${nhEnv} nh os test -H ${flakeAttr}";
   switchCleanCmd = "${nhEnv} nh clean all --keep 5 && rm -rf $HOME/.cache/nix && ${switchCmd}";
 
-  # The plugin hardcodes /usr/bin/stat, which doesn't exist on NixOS. Point it at coreutils.
   autoswitchSrc = pkgs.runCommandLocal "zsh-autoswitch-virtualenv-3.7.1" { } ''
     cp -r ${pkgs.fetchFromGitHub {
       owner = "MichaelAquilina";
@@ -26,6 +25,16 @@ in
     flake = flakePath;
   };
 
+  programs.fzf = {
+    enable = true;
+    enableZshIntegration = true;
+    defaultCommand = "fd --type f --hidden --strip-cwd-prefix --exclude .git";
+    fileWidgetCommand = "fd --type f --hidden --strip-cwd-prefix --exclude .git";
+    changeDirWidgetCommand = "fd --type d --hidden --strip-cwd-prefix --exclude .git";
+  };
+
+  home.packages = [ pkgs.fd pkgs.ripgrep ];
+
   programs.zsh = {
     enable = true;
     enableCompletion = true;
@@ -35,9 +44,18 @@ in
     initContent = ''
       bright() { brightnessctl set "$1%"; }
       export PATH="$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"
-      # Default fg=8 (dim gray) shimmers over the translucent/blurred terminal
-      # background; a brighter opaque color keeps glyph edges crisp.
       export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#7f849c'
+
+      search() {
+        local dir="''${2:-.}" open
+        command -v zeditor >/dev/null && open='zeditor {1}:{2}:{3}' || open='nvim +{2} {1}'
+        rg --column --line-number --no-heading --color=always --smart-case --hidden --glob '!.git' -e "" "$dir" \
+          | fzf --ansi --query "''${1:-}" \
+              --delimiter : \
+              --preview 'bat --color=always --highlight-line {2} {1}' \
+              --preview-window 'up,60%,+{2}+3/3' \
+              --bind "enter:become($open)"
+      }
     '';
 
     shellAliases = {
@@ -47,16 +65,13 @@ in
       switch-clean = switchCleanCmd;
       try = testCmd;
       reload = "${testCmd} && systemctl --user restart quickshell.service";
-      claude = "claude --dangerously-skip-permissions";
-      cc = "claude --dangerously-skip-permissions";
+      claude = "IS_DEMO=1 claude --dangerously-skip-permissions";
       claude-local = "$HOME/.local/bin/claude-local";
       neofetch = "fastfetch";
       notify = "notify-send";
       somo = "somo -l";
-      # Flip GTK/Qt color-scheme + theme together at runtime (no rebuild);
-      # flipping only color-scheme leaves gtk-theme stale = half-themed apps.
       dark = "dconf write /org/gnome/desktop/interface/color-scheme \"'prefer-dark'\" && dconf write /org/gnome/desktop/interface/gtk-theme \"'Adwaita-dark'\"";
-      white = "dconf write /org/gnome/desktop/interface/color-scheme \"'prefer-light'\" && dconf write /org/gnome/desktop/interface/gtk-theme \"'Adwaita'\"";
+      light = "dconf write /org/gnome/desktop/interface/color-scheme \"'prefer-light'\" && dconf write /org/gnome/desktop/interface/gtk-theme \"'Adwaita'\"";
       ts = "tailscale";
       mirror = "scrcpy --max-size=1080 --window-title=scrcpy";
     };
