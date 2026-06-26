@@ -3,6 +3,14 @@
 {
   imports = [ ../_shared/desktop-graphical.nix ];
 
+  # OpenRouter API key, decrypted to /run/agenix/openrouter-api-key for `claude-or`.
+  # Register the token with: cd secrets && agenix -e openrouter-api-key.age
+  age.secrets.openrouter-api-key = {
+    file = ../../secrets/openrouter-api-key.age;
+    owner = "pleahmacaka";
+    mode = "0400";
+  };
+
   boot.loader.systemd-boot = {
     enable = true;
     configurationLimit = 10;

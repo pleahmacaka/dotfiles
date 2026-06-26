@@ -30,4 +30,8 @@ let
   cluster-nodes = pi-nodes ++ x86-nodes;
 in
 {
+  # OpenRouter API key for the `claude-or` shell function (Claude Code via OpenRouter).
+  # Recipients: operator (to edit the secret) + laptop host key (to decrypt at activation).
+  # Add desktop/office-desktop once their host keys above are real (not REPLACE_ME).
+  "openrouter-api-key.age".publicKeys = operators ++ [ laptop ];
 }

@@ -46,6 +46,9 @@ in
       export PATH="$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"
       export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#7f849c'
 
+      # User-maintained secrets (not in the repo): export OPENROUTER_API_KEY, etc.
+      [[ -f "$HOME/.config/zsh/secrets.zsh" ]] && source "$HOME/.config/zsh/secrets.zsh"
+
       # GitHub Copilot CLI (agentic, via `gh copilot -p`): `?? <natural language>`
       # suggest a command, `? <cmd>` explain a command.
       # Install once in a real terminal: `gh copilot` (downloads the CLI).
@@ -54,6 +57,28 @@ in
       copilot_explain() { gh copilot -- -s -p "Explain this shell command concisely: $*"; }
       alias -- '??'='noglob copilot_suggest'
       alias -- '?'='noglob copilot_explain'
+
+      # Claude Code via OpenRouter (model: z-ai/glm-5.2).
+      # Key from agenix (/run/agenix/openrouter-api-key); set OPENROUTER_API_KEY to override.
+      claude-or() {
+        local key="''${OPENROUTER_API_KEY:-}"
+        local secret=/run/agenix/openrouter-api-key
+        [[ -z "$key" && -r "$secret" ]] && key="$(<"$secret")"
+        if [[ -z "$key" ]]; then
+          echo "✗ No OpenRouter key: agenix secret $secret missing and OPENROUTER_API_KEY unset." >&2
+          echo "  Register it: cd secrets && agenix -e openrouter-api-key.age, then rebuild." >&2
+          return 1
+        fi
+        ANTHROPIC_BASE_URL="https://openrouter.ai/api" \
+        ANTHROPIC_AUTH_TOKEN="$key" \
+        ANTHROPIC_API_KEY="" \
+        ANTHROPIC_DEFAULT_OPUS_MODEL="z-ai/glm-5.2" \
+        ANTHROPIC_DEFAULT_SONNET_MODEL="z-ai/glm-5.2" \
+        ANTHROPIC_DEFAULT_HAIKU_MODEL="z-ai/glm-5.2" \
+        CLAUDE_CODE_SUBAGENT_MODEL="z-ai/glm-5.2" \
+        IS_DEMO=1 \
+        claude --dangerously-skip-permissions "$@"
+      }
 
       search() {
         local dir="''${2:-.}" open
