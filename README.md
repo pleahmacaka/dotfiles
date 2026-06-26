@@ -145,3 +145,17 @@ ssh root@cluster-pi-0X cat /etc/ssh/ssh_host_ed25519_key.pub   # -> secrets/secr
 Declare via `mkClusterX86` in `flake.nix`, drop a file in `hosts/cluster/x86/`, then `incus cluster add`.
 
 </details>
+
+<details>
+<summary><b>Copilot in the shell</b></summary>
+
+`?? <natural language>` suggests a command, `? <cmd>` explains one (zsh, via `gh copilot -p`).
+
+```bash
+gh auth login          # once, if not already
+gh copilot             # once in a real terminal — downloads the Copilot CLI
+# if the download fails on NixOS:
+npm install -g @github/copilot
+```
+
+</details>

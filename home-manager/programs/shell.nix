@@ -33,7 +33,7 @@ in
     changeDirWidgetCommand = "fd --type d --hidden --strip-cwd-prefix --exclude .git";
   };
 
-  home.packages = [ pkgs.fd pkgs.ripgrep ];
+  home.packages = [ pkgs.fd pkgs.ripgrep pkgs.gh ];
 
   programs.zsh = {
     enable = true;
@@ -45,6 +45,15 @@ in
       bright() { brightnessctl set "$1%"; }
       export PATH="$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"
       export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#7f849c'
+
+      # GitHub Copilot CLI (agentic, via `gh copilot -p`): `?? <natural language>`
+      # suggest a command, `? <cmd>` explain a command.
+      # Install once in a real terminal: `gh copilot` (downloads the CLI).
+      # ponytail: `noglob` alias wrapper so `?`/`??`/`*` in the line aren't glob-expanded.
+      copilot_suggest() { gh copilot -- -s -p "Suggest a single shell command for this request, output only the command with no prose: $*"; }
+      copilot_explain() { gh copilot -- -s -p "Explain this shell command concisely: $*"; }
+      alias -- '??'='noglob copilot_suggest'
+      alias -- '?'='noglob copilot_explain'
 
       search() {
         local dir="''${2:-.}" open
