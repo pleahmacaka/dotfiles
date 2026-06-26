@@ -42,6 +42,16 @@ in
 
   services.earlyoom.enable = true;
 
+  # QEMU/KVM for Windows guests via GNOME Boxes (built-in USB redirection).
+  # UEFI firmware (OVMF) ships by default now and libvirt auto-selects it, so
+  # the firmware path survives GC; swtpm satisfies the Win11 TPM 2.0 check;
+  # virtio-win supplies the guest disk/net drivers (mount its ISO at install).
+  virtualisation.libvirtd = {
+    enable = true;
+    qemu.swtpm.enable = true;
+  };
+  virtualisation.spiceUSBRedirection.enable = true;
+
   programs.hyprland = {
     enable = true;
     xwayland.enable = true;
@@ -101,6 +111,9 @@ in
     libreoffice-fresh
     cifs-utils
     agenix
+    gnome-boxes
+    virtio-win # guest disk/net drivers
+    phodav # share files with guest
   ];
 
   environment.shellAliases.zed = "SHELL=$(getent passwd $USER | cut -d: -f7) zeditor";
@@ -232,6 +245,8 @@ in
     "video"
     "audio"
     "dialout"
+    "libvirtd"
+    "kvm" # Boxes runs qemu in the user session
   ];
 
   system.stateVersion = "26.04";
