@@ -24,16 +24,8 @@
 
   programs.zsh.enable = true;
 
-  environment.systemPackages = with pkgs; [
-    git
-    neovim
-    btop
-    bat
-    tree
-    just
-    fastfetch
-    wget
-  ];
+  # git/btop/bat/tree/just/fastfetch/wget come from nix-base.nix (imported above).
+  environment.systemPackages = with pkgs; [ neovim ];
 
   services.openssh = {
     enable = true;
@@ -52,7 +44,10 @@
     preseed = null;
   };
 
-  users.users.pleahmacaka.extraGroups = [ "wheel" "incus-admin" ];
+  users.users.pleahmacaka.extraGroups = [
+    "wheel"
+    "incus-admin"
+  ];
 
   networking.nftables.enable = true;
 

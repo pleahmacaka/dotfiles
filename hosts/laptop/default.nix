@@ -77,7 +77,10 @@
     after = [ "asusd.service" ];
     wants = [ "asusd.service" ];
     wantedBy = [ "multi-user.target" ];
-    path = [ config.services.asusd.package pkgs.coreutils ];
+    path = [
+      config.services.asusd.package
+      pkgs.coreutils
+    ];
     unitConfig.ConditionPathExists = "!/var/lib/asusd-default-quiet.stamp";
     serviceConfig = {
       Type = "oneshot";
@@ -95,6 +98,19 @@
     '';
   };
 
-  networking.firewall.allowedTCPPorts = [ 25565 5173 8000 ];
-  networking.firewall.allowedUDPPorts = [ 25565 7777 7778 27015 ];
+  networking.firewall.allowedTCPPorts = [
+    25565
+    5173
+    8000
+  ];
+  networking.firewall.allowedUDPPorts = [
+    25565
+    7777
+    7778
+    27015
+  ];
+
+  # Direct ethernet link sharing: NM shared-lan profile on eno1 (10.42.0.0/24).
+  # Trust the LAN side so DHCP/DNS/forwarding from the peer isn't firewalled.
+  networking.firewall.trustedInterfaces = [ "eno1" ];
 }

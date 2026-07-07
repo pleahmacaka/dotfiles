@@ -1,24 +1,45 @@
-{ osConfig, pkgs, ... }:
+{
+  osConfig,
+  pkgs,
+  isDark,
+  isLaptop,
+  isOfficeDesktop,
+  ...
+}:
 
 let
-  hostName = osConfig.networking.hostName;
-  isOfficeDesktop = hostName == "nixos-office-desktop";
-  isLaptop = hostName == "nixos-laptop";
-  isDark = hostName == "nixos-desktop";
+  # File-dialog windows that should float + center (GTK/portal pickers use these titles).
+  fileDialogTitles = [
+    "Open File"
+    "Save File"
+    "Save As"
+    "Open"
+    "Select a File"
+    "Choose Files"
+    "File Upload"
+  ];
+  workspaceIds = [
+    1
+    2
+    3
+    4
+    5
+  ];
   wallpaper = if isDark then ../wallpapers/nix-dark.png else ../wallpapers/nix-bright.png;
   isNvidia = builtins.elem "nvidia" (osConfig.services.xserver.videoDrivers or [ ]);
 
   hyprshot = "${pkgs.hyprshot}/bin/hyprshot";
 in
 {
-  home.packages = [ pkgs.swaybg pkgs.hyprshot ];
+  home.packages = [
+    pkgs.swaybg
+    pkgs.hyprshot
+  ];
 
   wayland.windowManager.hyprland = {
     enable = true;
+    configType = "hyprlang";
     settings = {
-      # Laptop runs fractional 1.25 scale; XWayland apps (termius, FreeRDP)
-      # blur when the compositor upscales them. Render them at native pixels
-      # instead so they stay sharp.
       xwayland.force_zero_scaling = isLaptop;
 
       env = [
@@ -79,7 +100,6 @@ in
       };
 
       cursor = {
-        # NVIDIA HW cursor often fails to update shape; software cursor is reliable.
         no_hardware_cursors = isNvidia;
       };
 
@@ -123,14 +143,9 @@ in
         "size 432 936, class:^(scrcpy)$"
         "center, class:^(scrcpy)$"
         "pin, class:^(scrcpy)$"
-
-        "float, title:^(Open File)(.*)$"
-        "float, title:^(Save File)(.*)$"
-        "float, title:^(Save As)(.*)$"
-        "float, title:^(Open)(.*)$"
-        "float, title:^(Select a File)(.*)$"
-        "float, title:^(Choose Files)(.*)$"
-        "float, title:^(File Upload)(.*)$"
+      ]
+      ++ map (t: "float, title:^(${t})(.*)$") fileDialogTitles
+      ++ [
         "float, title:^(Library)(.*)$"
         "float, class:^(xdg-desktop-portal-gtk)$"
         "float, class:^(xdg-desktop-portal-hyprland)$"
@@ -142,22 +157,15 @@ in
         "float, class:^(blueman-manager)$"
         "float, title:^(Picture-in-Picture)$"
         "float, title:^(.*)(Bitwarden)(.*)$"
-
-        "center, title:^(Open File)(.*)$"
-        "center, title:^(Save File)(.*)$"
-        "center, title:^(Save As)(.*)$"
-        "center, title:^(Open)(.*)$"
-        "center, title:^(Select a File)(.*)$"
-        "center, title:^(Choose Files)(.*)$"
-        "center, title:^(File Upload)(.*)$"
+      ]
+      ++ map (t: "center, title:^(${t})(.*)$") fileDialogTitles
+      ++ [
         "center, class:^(xdg-desktop-portal-gtk)$"
-
-        # opacity affects page content too, so keep it high.
         "opacity 0.95 0.92, class:^(brave-browser)$"
       ];
 
       bind = [
-        "SUPER, T, exec, ghostty"
+        "SUPER, T, exec, alacritty"
         "SUPER, E, exec, nautilus"
         "SUPER, Q, killactive"
 
@@ -166,19 +174,10 @@ in
         "SUPER, V, exec, qs ipc call shell toggleClipboard"
 
         "SUPER, P, togglefloating,"
-
-        "SUPER, 1, workspace, 1"
-        "SUPER, 2, workspace, 2"
-        "SUPER, 3, workspace, 3"
-        "SUPER, 4, workspace, 4"
-        "SUPER, 5, workspace, 5"
-
-        "SUPER SHIFT, 1, movetoworkspace, 1"
-        "SUPER SHIFT, 2, movetoworkspace, 2"
-        "SUPER SHIFT, 3, movetoworkspace, 3"
-        "SUPER SHIFT, 4, movetoworkspace, 4"
-        "SUPER SHIFT, 5, movetoworkspace, 5"
-
+      ]
+      ++ map (n: "SUPER, ${toString n}, workspace, ${toString n}") workspaceIds
+      ++ map (n: "SUPER SHIFT, ${toString n}, movetoworkspace, ${toString n}") workspaceIds
+      ++ [
         "SUPER, left,  movefocus, l"
         "SUPER, right, movefocus, r"
         "SUPER, up,    movefocus, u"

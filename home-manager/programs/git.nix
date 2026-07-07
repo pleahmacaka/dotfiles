@@ -11,9 +11,6 @@
         email = "pleahmacaka@gmail.com";
       };
       init.defaultBranch = "main";
-      gitCredentialHelper = {
-        enable = true;
-      };
       credential = {
         "https://github.com".helper = "!gh auth git-credential";
         "https://huggingface.co".helper =

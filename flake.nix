@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
@@ -29,10 +29,21 @@
       system = "x86_64-linux";
 
       mkNixosConfig =
-        { hostname, modules, extraArgs ? { } }:
+        {
+          hostname,
+          modules,
+          extraArgs ? { },
+        }:
+        let
+          traits = {
+            isDark = hostname == "nixos-desktop";
+            isLaptop = hostname == "nixos-laptop";
+            isOfficeDesktop = hostname == "nixos-office-desktop";
+          };
+        in
         nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = extraArgs // { inherit inputs; };
+          specialArgs = extraArgs // { inherit inputs; } // traits;
           modules = [
             ./modules/common
             determinate.nixosModules.default
@@ -44,6 +55,7 @@
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.backupFileExtension = "hmbak";
+              home-manager.extraSpecialArgs = traits;
               home-manager.users.pleahmacaka = import ./home-manager/pleahmacaka.nix;
             }
           ]
@@ -51,7 +63,7 @@
         };
 
       # Pi cluster nodes - built via nixos-raspberrypi's wrapper but pinned
-      # to the dotfiles' nixpkgs (26.05) so all hosts share one channel.
+      # to the dotfiles' nixpkgs (unstable) so all hosts share one channel.
       # nixos-raspberrypi still injects its rpi kernel/firmware overlays.
       mkClusterPi =
         { hostname }:
@@ -68,15 +80,21 @@
           ];
         };
 
-      piHostNames = [ "pi-01" "pi-02" "pi-03" "pi-04" "pi-05" ];
-      piConfigs = builtins.listToAttrs (map
-        (name: {
+      piHostNames = [
+        "pi-01"
+        "pi-02"
+        "pi-03"
+        "pi-04"
+        "pi-05"
+      ];
+      piConfigs = builtins.listToAttrs (
+        map (name: {
           name = "cluster-${name}";
           value = mkClusterPi {
             hostname = "cluster-${name}";
           };
-        })
-        piHostNames);
+        }) piHostNames
+      );
     in
     {
       nixosConfigurations = {
@@ -117,5 +135,15 @@
         };
       }
       // piConfigs;
+
+      devShells.${system}.default = nixpkgs.legacyPackages.${system}.mkShellNoCC {
+        packages = with nixpkgs.legacyPackages.${system}; [
+          just
+          nixfmt
+          agenix.packages.${system}.default
+        ];
+      };
+
+      formatter.${system} = nixpkgs.legacyPackages.${system}.nixfmt;
     };
 }

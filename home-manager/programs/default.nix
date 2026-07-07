@@ -5,7 +5,7 @@
     ./direnv.nix
     ./quickshell.nix
     ./hyprland.nix
-    ./ghostty.nix
+    ./alacritty.nix
     ./fastfetch.nix
     ./xdg.nix
     ./theme.nix

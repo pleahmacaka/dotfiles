@@ -1,7 +1,6 @@
-{ lib, pkgs, wuw, ... }:
+{ pkgs, wuw, ... }:
 
 {
-  wsl.enable = lib.mkDefault false;
   wsl.defaultUser = "pleahmacaka";
 
   networking.networkmanager.enable = false;

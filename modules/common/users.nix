@@ -9,7 +9,5 @@
     shell = pkgs.zsh;
   };
 
-  system.userActivationScripts.zshrc = "touch ~/.zshrc";
-
   users.groups.pleahmacaka = { };
 }

@@ -1,11 +1,5 @@
-{ config, pkgs, osConfig, ... }:
+{ config, pkgs, ... }:
 
-let
-  isDark = osConfig.networking.hostName == "nixos-desktop";
-  gtkTheme = if isDark then "Adwaita-dark" else "Adwaita";
-  qtStyle = if isDark then "adwaita-dark" else "adwaita";
-  colorScheme = if isDark then "prefer-dark" else "prefer-light";
-in
 {
   home.pointerCursor = {
     name = "Adwaita";
@@ -18,7 +12,7 @@ in
   gtk = {
     enable = true;
     theme = {
-      name = gtkTheme;
+      name = "Adwaita-dark";
       package = pkgs.gnome-themes-extra;
     };
     iconTheme = {
@@ -31,16 +25,15 @@ in
   qt = {
     enable = true;
     platformTheme.name = "adwaita";
-    style.name = qtStyle;
+    style.name = "adwaita-dark";
   };
 
   dconf.settings = {
     "org/gnome/desktop/interface" = {
-      color-scheme = colorScheme;
-      gtk-theme = gtkTheme;
-      # GTK re-reads gsettings on a color-scheme change and, if this is unset,
-      # overrides the GTK_IM_MODULE env with empty — dropping kime on dark↔light
-      # toggle. Pin it so Korean input survives the switch.
+      color-scheme = "prefer-dark";
+      gtk-theme = "Adwaita-dark";
+      # GTK overrides GTK_IM_MODULE with empty when this is unset, dropping kime.
+      # Pin it so Korean input works.
       gtk-im-module = "kime";
     };
   };

@@ -262,7 +262,6 @@ PanelWindow {
             }
           }
 
-          // ponytail: current month only, no prev/next nav. Add arrows if needed.
           Repeater {
             model: {
               const y = calendar.shown.getFullYear();

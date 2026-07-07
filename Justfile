@@ -2,6 +2,10 @@
 default:
     @just --list
 
+# Format Nix files with nixfmt (RFC style); skips generated hardware-configuration.nix.
+format:
+    nix run nixpkgs#nixfmt -- $(find . -name '*.nix' -not -path './.git/*' -not -name 'hardware-configuration.nix')
+
 # Configure agenix recipients in secrets/secrets.nix interactively.
 agenix:
     #!/usr/bin/env bash

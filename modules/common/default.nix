@@ -3,7 +3,6 @@
 {
   imports = [
     ./nix-base.nix
-    ./development.nix
     ./users.nix
   ];
 
@@ -97,9 +96,6 @@
     openFirewall = true;
   };
 
-  services.printing.enable = true;
-  services.printing.drivers = [ pkgs.gutenprint ];
-
   environment.pathsToLink = [
     "/share/applications"
     "/share/xdg-desktop-portal"
@@ -122,11 +118,12 @@
     wget
     zip
     unzip
+    python313
+    python313Packages.torch
+    uv
   ];
 
   security.polkit.enable = true;
 
-  # Jupyter-like programs need stdc++ at runtime; nix-ld provides it to
-  # foreign dynamically-linked binaries without polluting LD_LIBRARY_PATH globally.
   programs.nix-ld.libraries = with pkgs; [ stdenv.cc.cc.lib ];
 }

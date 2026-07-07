@@ -1,11 +1,8 @@
-{ pkgs, config, ... }:
+{ pkgs, isLaptop, ... }:
 
 let
-  # Termius' bundled Electron ignores Wayland and renders blurry via XWayland
-  # under the laptop's 1.25 fractional scale. Force its internal device scale
-  # to match (paired with hyprland xwayland.force_zero_scaling).
   termius =
-    if config.networking.hostName == "nixos-laptop" then
+    if isLaptop then
       pkgs.symlinkJoin {
         name = "termius-scaled";
         paths = [ pkgs.termius ];
@@ -19,8 +16,10 @@ let
       pkgs.termius;
 in
 {
-  # bitwarden-desktop currently depends on electron-39, which nixpkgs marks insecure.
-  nixpkgs.config.permittedInsecurePackages = [ "electron-39.8.10" ];
+  nixpkgs.config.permittedInsecurePackages = [
+    "electron-39.8.10"
+    "pnpm-10.29.2"
+  ];
 
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.timeout = 1;
@@ -42,10 +41,6 @@ in
 
   services.earlyoom.enable = true;
 
-  # QEMU/KVM for Windows guests via GNOME Boxes (built-in USB redirection).
-  # UEFI firmware (OVMF) ships by default now and libvirt auto-selects it, so
-  # the firmware path survives GC; swtpm satisfies the Win11 TPM 2.0 check;
-  # virtio-win supplies the guest disk/net drivers (mount its ISO at install).
   virtualisation.libvirtd = {
     enable = true;
     qemu.swtpm.enable = true;
@@ -83,8 +78,6 @@ in
     ];
     config.common = {
       default = "hyprland";
-      # Pin GTK as the appearance backend so apps follow the dconf color-scheme
-      # (dark/white toggle); the hyprland backend doesn't implement Settings.
       "org.freedesktop.impl.portal.Settings" = [ "gtk" ];
     };
   };
@@ -95,7 +88,6 @@ in
       commandLineArgs = "--password-store=gnome-libsecret --ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --disable-features=WaylandColorManagementV1 --enable-wayland-ime";
     })
     zed-editor
-    tailscale
     claude-code
     opencode
     vesktop
@@ -108,19 +100,17 @@ in
     rustdesk-flutter
     bitwarden-desktop
     nautilus
+    obsidian
     libreoffice-fresh
     cifs-utils
     agenix
     gnome-boxes
-    virtio-win # guest disk/net drivers
-    phodav # share files with guest
+    virtio-win
+    phodav
   ];
 
   environment.shellAliases.zed = "SHELL=$(getent passwd $USER | cut -d: -f7) zeditor";
 
-  # Electron apps default to XWayland → blurry on HiDPI. NIXOS_OZONE_WL only
-  # reaches nixpkgs-wrapped electron; termius ships a prebuilt binary, so it
-  # needs the upstream ELECTRON_OZONE_PLATFORM_HINT too.
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1";
     ELECTRON_OZONE_PLATFORM_HINT = "wayland";
@@ -192,16 +182,9 @@ in
     };
   };
 
-  services.dbus.enable = true;
   services.gnome.gnome-keyring.enable = true;
   security.pam.services.sddm.enableGnomeKeyring = true;
 
-  # Office Canon iR-ADV C3530i @ 192.168.0.100. The printer has IPP (631) closed
-  # and doesn't advertise mDNS — only raw AppSocket (9100) is open — so it's
-  # pinned by IP with Canon's official UFR II driver (its native PDL; generic
-  # PostScript/PCL produced no output). The socket URI + static PPD means
-  # lpadmin never contacts the printer at rebuild, so switches still succeed off
-  # the office LAN (roaming laptop).
   services.printing = {
     enable = true;
     drivers = [ pkgs.canon-cups-ufr2 ];
@@ -217,15 +200,9 @@ in
       }
     ];
   };
-  services.avahi = {
-    enable = true;
-    nssmdns4 = true;
-    openFirewall = true;
-  };
 
   services.udisks2.enable = true;
   services.gvfs.enable = true;
-  # WS-Discovery so Windows hosts show up in nautilus' Network sidebar.
   services.samba-wsdd.enable = true;
 
   services.tailscale.enable = true;
@@ -246,7 +223,7 @@ in
     "audio"
     "dialout"
     "libvirtd"
-    "kvm" # Boxes runs qemu in the user session
+    "kvm"
   ];
 
   system.stateVersion = "26.04";
