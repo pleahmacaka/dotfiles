@@ -8,6 +8,9 @@
     wuw.url = "github:PleahMaCaka/wuw";
     wuw.inputs.nixpkgs.follows = "nixpkgs";
 
+    llm-agents.url = "github:numtide/llm-agents.nix";
+    llm-agents.inputs.nixpkgs.follows = "nixpkgs";
+
     nixos-raspberrypi.url = "github:nvmd/nixos-raspberrypi/main";
 
     agenix.url = "github:ryantm/agenix";

@@ -46,6 +46,7 @@ in
     pkgs.fd
     pkgs.ripgrep
     pkgs.gh
+    pkgs.cloc
   ];
 
   programs.zsh = {
@@ -145,6 +146,7 @@ in
       vi = "nvim";
       ts = "tailscale";
       mirror = "scrcpy --max-size=1080 --window-title=scrcpy";
+      cloc = "cloc --vcs=git";
     };
 
     oh-my-zsh = {

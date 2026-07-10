@@ -1,6 +1,7 @@
-{ pkgs, isLaptop, ... }:
+{ pkgs, isLaptop, inputs, ... }:
 
 let
+  llmAgents = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
   termius =
     if isLaptop then
       pkgs.symlinkJoin {
@@ -88,7 +89,8 @@ in
       commandLineArgs = "--password-store=gnome-libsecret --ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --disable-features=WaylandColorManagementV1 --enable-wayland-ime";
     })
     zed-editor
-    claude-code
+    llmAgents.claude-code # numtide/llm-agents.nix, replaces nixpkgs claude-code
+    llmAgents.reasonix
     opencode
     vesktop
     termius
