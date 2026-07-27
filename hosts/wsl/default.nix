@@ -1,4 +1,4 @@
-{ pkgs, wuw, ... }:
+{ pkgs, wuw, claude-science, ... }:
 
 {
   wsl.defaultUser = "pleahmacaka";
@@ -13,6 +13,7 @@
 
   environment.systemPackages = with pkgs; [
     wuw
+    claude-science
     usbutils
     kmod
   ];

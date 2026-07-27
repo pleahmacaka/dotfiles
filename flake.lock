@@ -97,6 +97,26 @@
         "type": "github"
       }
     },
+    "claude-science": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1785135702,
+        "narHash": "sha256-Bx2sLQq/wngp0gUseojoUesTiQ8SSYJi2GAGJ31PsSk=",
+        "owner": "pleahmacaka",
+        "repo": "claude-science-nix",
+        "rev": "09fb018cb44e55ccf87a97334fd01e84d9f77190",
+        "type": "github"
+      },
+      "original": {
+        "owner": "pleahmacaka",
+        "repo": "claude-science-nix",
+        "type": "github"
+      }
+    },
     "darwin": {
       "inputs": {
         "nixpkgs": [
@@ -616,6 +636,7 @@
     "root": {
       "inputs": {
         "agenix": "agenix",
+        "claude-science": "claude-science",
         "determinate": "determinate",
         "home-manager": "home-manager_2",
         "llm-agents": "llm-agents",

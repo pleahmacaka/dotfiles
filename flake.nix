@@ -11,6 +11,9 @@
     llm-agents.url = "github:numtide/llm-agents.nix";
     llm-agents.inputs.nixpkgs.follows = "nixpkgs";
 
+    claude-science.url = "github:pleahmacaka/claude-science-nix";
+    claude-science.inputs.nixpkgs.follows = "nixpkgs";
+
     nixos-raspberrypi.url = "github:nvmd/nixos-raspberrypi/main";
 
     agenix.url = "github:ryantm/agenix";
@@ -26,6 +29,7 @@
       wuw,
       nixos-raspberrypi,
       agenix,
+      claude-science,
       ...
     }@inputs:
     let
@@ -105,6 +109,7 @@
           hostname = "nixos-wsl";
           extraArgs = {
             wuw = wuw.defaultPackage.${system};
+            claude-science = claude-science.packages.${system}.default;
           };
           modules = [
             nixos-wsl.nixosModules.default
