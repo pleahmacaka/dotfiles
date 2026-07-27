@@ -24,7 +24,6 @@
 
   programs.zsh.enable = true;
 
-  # git/btop/bat/tree/just/fastfetch/wget come from nix-base.nix (imported above).
   environment.systemPackages = with pkgs; [ neovim ];
 
   services.openssh = {

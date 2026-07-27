@@ -14,7 +14,6 @@
 
   boot.kernel.sysctl."vm.swappiness" = 10;
 
-  # termius + obsidian come from desktop-graphical.nix (imported above).
   environment.systemPackages = with pkgs; [
     scrcpy
     android-tools

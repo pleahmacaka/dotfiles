@@ -3,8 +3,7 @@
 {
   imports = [ ../_shared/desktop-graphical.nix ];
 
-  # OpenRouter API key, decrypted to /run/agenix/openrouter-api-key for `claude-or`.
-  # Register the token with: cd secrets && agenix -e openrouter-api-key.age
+  # Set the token with: cd secrets && agenix -e openrouter-api-key.age
   age.secrets.openrouter-api-key = {
     file = ../../secrets/openrouter-api-key.age;
     owner = "pleahmacaka";
@@ -18,7 +17,7 @@
 
   boot.kernel.sysctl."vm.swappiness" = 180;
 
-  # aarch64 emulation so `just image` can build the Pi SD images locally.
+  # Lets `just image` build the aarch64 Pi images locally.
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
   networking.networkmanager.wifi.powersave = false;
@@ -70,8 +69,7 @@
   services.asusd.enable = true;
   services.supergfxd.enable = true;
 
-  # Default AC + battery profiles to Quiet once; the stamp leaves later
-  # manual changes (e.g. via the GUI) untouched on rebuild/reboot.
+  # Stamped so later manual profile changes survive rebuilds.
   systemd.services.asusd-default-quiet = {
     description = "Default asusd platform profile to Quiet (once)";
     after = [ "asusd.service" ];
@@ -110,7 +108,6 @@
     27015
   ];
 
-  # Direct ethernet link sharing: NM shared-lan profile on eno1 (10.42.0.0/24).
-  # Trust the LAN side so DHCP/DNS/forwarding from the peer isn't firewalled.
+  # eno1 runs the NM shared-lan profile; DHCP/DNS to the peer must pass.
   networking.firewall.trustedInterfaces = [ "eno1" ];
 }

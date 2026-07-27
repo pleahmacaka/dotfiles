@@ -32,8 +32,7 @@
     "org/gnome/desktop/interface" = {
       color-scheme = "prefer-dark";
       gtk-theme = "Adwaita-dark";
-      # GTK overrides GTK_IM_MODULE with empty when this is unset, dropping kime.
-      # Pin it so Korean input works.
+      # Unset, GTK blanks GTK_IM_MODULE and Korean input dies.
       gtk-im-module = "kime";
     };
   };

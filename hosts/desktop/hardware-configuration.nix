@@ -1,9 +1,7 @@
 { ... }:
 
 {
-  # Placeholder hardware-configuration.
-  # Replace this entire file with the output of `nixos-generate-config`
-  # run on the actual desktop machine before deploying.
+  # Placeholder: replace with nixos-generate-config output before deploying.
   imports = [ ];
 
   boot.initrd.availableKernelModules = [ ];

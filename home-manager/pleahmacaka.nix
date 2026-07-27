@@ -11,11 +11,10 @@
 
   programs.home-manager.enable = true;
 
-  # Skip the HM manual; its options.json build emits a context warning under flakes.
+  # The manual's options.json build warns under flakes.
   manual.manpages.enable = false;
   manual.json.enable = false;
 
-  # WSL is headless: no session dconf service, so the dconf activation the
-  # desktop theme config triggers hard-fails. Skip it there.
+  # WSL is headless, so dconf activation hard-fails there.
   dconf.enable = lib.mkForce (!(osConfig.wsl.enable or false));
 }

@@ -52,7 +52,6 @@ PanelWindow {
     }
   }
 
-  // click outside closes
   MouseArea {
     anchors.fill: parent
     onClicked: root.hide()
@@ -76,7 +75,6 @@ PanelWindow {
       anchors.margins: 10
       spacing: 4
 
-      // search box
       Row {
         width: parent.width
         spacing: 8
@@ -118,15 +116,13 @@ PanelWindow {
         }
       }
 
-      // results
       ListView {
         width: parent.width
         height: 520
         clip: true
         model: root.results
         boundsBehavior: Flickable.StopAtBounds
-        // Recycle delegates and pre-render a screenful above/below so flicking
-        // doesn't rebuild rows + reload icons on every frame.
+        // Without these, flicking reloads every row's icon per frame.
         reuseItems: true
         cacheBuffer: 1120
         delegate: Rectangle {
@@ -147,8 +143,7 @@ PanelWindow {
               width: 36; height: 36
               source: Quickshell.iconPath(modelData.icon, "application-x-executable")
               fillMode: Image.PreserveAspectFit
-              // Render at display size (not the provider's default 100px) and
-              // off-thread, so scrolling stays smooth.
+              // The provider defaults to 100px, which stutters while scrolling.
               sourceSize.width: 36
               sourceSize.height: 36
               asynchronous: true

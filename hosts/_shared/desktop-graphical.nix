@@ -89,7 +89,7 @@ in
       commandLineArgs = "--password-store=gnome-libsecret --ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --disable-features=WaylandColorManagementV1 --enable-wayland-ime";
     })
     zed-editor
-    llmAgents.claude-code # numtide/llm-agents.nix, replaces nixpkgs claude-code
+    llmAgents.claude-code
     llmAgents.reasonix
     opencode
     vesktop

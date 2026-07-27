@@ -112,7 +112,6 @@ in
             10;
       };
 
-      # colors + opacity live in the imported theme file so `dark`/`light` can swap them.
       general.import = [ "${config.home.homeDirectory}/.config/alacritty/theme-active.toml" ];
 
       window = {
@@ -133,7 +132,6 @@ in
     };
   };
 
-  # Two swappable theme files; opacity rides along so dark gets its lower value.
   home.file.".config/alacritty/mocha.toml".source = tomlFmt.generate "mocha.toml" {
     colors = mocha;
     window.opacity = 0.8;
@@ -144,7 +142,7 @@ in
     window.opacity = 0.95;
   };
 
-  # Seed the active theme once (host default); dark/light overwrite it at runtime.
+  # Seeded once only; dark/light overwrite it at runtime.
   home.activation.alacrittyTheme = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
     d="$HOME/.config/alacritty"
     [ -e "$d/theme-active.toml" ] || $DRY_RUN_CMD cp -L "$d/${

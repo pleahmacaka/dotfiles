@@ -19,8 +19,7 @@ let
     }
   '';
 
-  # Bundle the QML sources with the generated Theme.qml in one store dir so
-  # singleton/sibling component resolution sees them all together.
+  # QML singleton resolution needs Theme.qml in the same dir as its siblings.
   qsSrc = pkgs.runCommandLocal "hm_quickshell" { } ''
     cp -r ${./quickshell} $out
     chmod -R u+w $out
@@ -28,14 +27,12 @@ let
   '';
 in
 {
-  # qt6.qtdeclarative provides qmlls (QML language server) for Zed's QML LSP.
   home.packages = [
     pkgs.quickshell
-    pkgs.qt6.qtdeclarative
+    pkgs.qt6.qtdeclarative # qmlls, for Zed's QML LSP
   ];
 
-  # Same rationale as the old ags service: bind to graphical-session.target so
-  # WAYLAND_DISPLAY is imported before start (exec-once raced that on boot).
+  # graphical-session.target guarantees WAYLAND_DISPLAY; exec-once raced it.
   systemd.user.services.quickshell = {
     Unit = {
       Description = "Quickshell (bar, launcher, clipboard)";
@@ -44,19 +41,14 @@ in
     };
     Install.WantedBy = [ "graphical-session.target" ];
     Service = {
-      # adwaita-qt (the global qt.platformTheme) never sets Qt's icon-theme
-      # name, so QIcon falls back to hicolor and most tray/symbolic icons fail.
-      # gtk3 reads the configured GTK Adwaita icon theme. Pure-QML, so this
-      # doesn't change app styling — it only fixes icon resolution.
+      # adwaita-qt sets no icon-theme name, so QIcon falls back to hicolor.
       Environment = [
         "QS_REV=${qsSrc}"
         "QT_QPA_PLATFORMTHEME=gtk3"
       ];
       ExecStart = "${pkgs.quickshell}/bin/qs";
       Restart = "on-failure";
-      # Launcher-spawned apps (brave/vesktop) inherit this unit's cgroup, so the
-      # default control-group kill takes them down on `reload`/switch restarts.
-      # KillMode=process signals only qs; the launched apps survive (reparented).
+      # Launcher-spawned apps share this cgroup; a control-group kill takes them too.
       KillMode = "process";
     };
   };

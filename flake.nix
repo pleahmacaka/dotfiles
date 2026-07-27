@@ -69,9 +69,7 @@
           ++ modules;
         };
 
-      # Pi cluster nodes - built via nixos-raspberrypi's wrapper but pinned
-      # to the dotfiles' nixpkgs (unstable) so all hosts share one channel.
-      # nixos-raspberrypi still injects its rpi kernel/firmware overlays.
+      # nixpkgs is pinned to this flake's so all hosts share one channel.
       mkClusterPi =
         { hostname }:
         nixos-raspberrypi.lib.nixosSystem {

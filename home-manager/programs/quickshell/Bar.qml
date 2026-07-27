@@ -17,7 +17,6 @@ PanelWindow {
   color: "transparent"
   WlrLayershell.namespace: "bar"
 
-  // glass panel
   Rectangle {
     anchors.fill: parent
     color: Theme.glassBg
@@ -26,7 +25,6 @@ PanelWindow {
     border.color: Theme.glassBorder
     border.width: 1
 
-    // ---- top: workspaces ----
     Column {
       id: workspaces
       anchors.top: parent.top
@@ -56,7 +54,6 @@ PanelWindow {
       }
     }
 
-    // ---- center: clock ----
     SystemClock {
       id: clock
       precision: SystemClock.Minutes
@@ -107,22 +104,19 @@ PanelWindow {
       }
     }
 
-    // ---- bottom: tray, notifications, battery ----
     Column {
       anchors.bottom: parent.bottom
       anchors.bottomMargin: 10
       anchors.horizontalCenter: parent.horizontalCenter
       spacing: 6
 
-      // tray
       Repeater {
         model: SystemTray.items.values
         delegate: Item {
           required property var modelData
           width: 28
           height: 28
-          // Hide tray items whose icon can't be resolved (broken texture)
-          // rather than showing a placeholder.
+          // Unresolvable icons render as a broken texture, so hide them.
           visible: trayImg.status !== Image.Error
           Image {
             id: trayImg
@@ -156,7 +150,6 @@ PanelWindow {
         }
       }
 
-      // notifications (reads mako history)
       Rectangle {
         width: 28
         height: 28
@@ -178,7 +171,6 @@ PanelWindow {
         }
       }
 
-      // battery
       Column {
         spacing: 2
         readonly property var bat: UPower.displayDevice
@@ -201,14 +193,12 @@ PanelWindow {
     }
   }
 
-  // ===== calendar popover =====
   PopupWindow {
     id: calendar
     visible: false
     color: "transparent"
     anchor.window: bar
     anchor.rect.x: bar.width + 4
-    // Center vertically against the clock (which is centered in the bar).
     anchor.rect.y: (bar.height - calendar.implicitHeight) / 2
     implicitWidth: 232
     implicitHeight: calBox.implicitHeight
@@ -293,14 +283,12 @@ PanelWindow {
     }
   }
 
-  // ===== notifications popover =====
   PopupWindow {
     id: notifPopup
     visible: false
     color: "transparent"
     anchor.window: bar
     anchor.rect.x: bar.width + 4
-    // Align near the bell, toward the bottom of the bar.
     anchor.rect.y: bar.height - notifPopup.implicitHeight - 80
     implicitWidth: 300
     implicitHeight: Math.min(notifBox.implicitHeight, 500)

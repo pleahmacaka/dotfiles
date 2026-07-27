@@ -8,7 +8,7 @@
 }:
 
 let
-  # File-dialog windows that should float + center (GTK/portal pickers use these titles).
+  # Titles GTK/portal file pickers use; matched to float and center them.
   fileDialogTitles = [
     "Open File"
     "Save File"

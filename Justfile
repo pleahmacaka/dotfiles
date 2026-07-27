@@ -1,19 +1,17 @@
-# `just` to list recipes, `just <name>` to run one.
 default:
     @just --list
 
-# Format Nix files with nixfmt (RFC style); skips generated hardware-configuration.nix.
+# Format Nix files with nixfmt.
 format:
     nix run nixpkgs#nixfmt -- $(find . -name '*.nix' -not -path './.git/*' -not -name 'hardware-configuration.nix')
 
-# Configure agenix recipients in secrets/secrets.nix interactively.
+# Configure agenix recipients interactively.
 agenix:
     #!/usr/bin/env bash
     set -euo pipefail
     rules="secrets/secrets.nix"
     [[ -f "$rules" ]] || { echo "✗ $rules not found - run from the repo root."; exit 1; }
 
-    # Write a `name = "<pubkey>";` recipient line in the rules file.
     set_key() {
       local var="$1" key
       key="$(tr -d '\n' <<<"$2" | sed 's/[[:space:]]*$//')"
@@ -27,7 +25,6 @@ agenix:
 
     echo "== agenix auto-config =="
 
-    # 1) Operator key (the human who edits secrets).
     opub="$HOME/.ssh/id_ed25519.pub"
     if [[ ! -f "$opub" ]]; then
       read -rp "No operator key (~/.ssh/id_ed25519). Generate one now? [y/N] " a
@@ -38,7 +35,7 @@ agenix:
       [[ "$a" =~ ^[Nn]$ ]] || set_key operator "$(cat "$opub")"
     fi
 
-    # 2) This host's key -> the matching rules var (nixos-laptop -> laptop, ...).
+    # Hostname nixos-laptop maps to the 'laptop' rules var.
     var="$(hostname)"; var="${var#nixos-}"
     hpub="/etc/ssh/ssh_host_ed25519_key.pub"
     if [[ -f "$hpub" ]]; then
@@ -46,7 +43,6 @@ agenix:
       [[ "$a" =~ ^[Nn]$ ]] || set_key "$var" "$(cat "$hpub")"
     fi
 
-    # 3) Remote hosts over SSH (loop until blank).
     read -rp "Fetch host keys from remote machines over SSH? [y/N] " a
     if [[ "$a" =~ ^[Yy]$ ]]; then
       while true; do
@@ -62,7 +58,6 @@ agenix:
       done
     fi
 
-    # 4) Rekey existing secrets to the new recipient set.
     shopt -s nullglob; ages=(secrets/*.age)
     if (( ${#ages[@]} )); then
       read -rp "Rekey ${#ages[@]} existing secret(s) now? [y/N] " a
@@ -73,13 +68,12 @@ agenix:
     grep -nE '^  [a-z0-9-]+ = "ssh-' "$rules" || true
     echo; echo "Still unset:"; grep -n REPLACE_ME "$rules" || echo "  (none - all filled)"
 
-# Build a cluster node's SD-card image interactively.
+# Build a cluster node's SD-card image.
 image:
     #!/usr/bin/env bash
     set -euo pipefail
     echo "== cluster image builder =="
 
-    # Discover cluster-* nodes from the flake.
     mapfile -t nodes < <(nix eval --json '.#nixosConfigurations' \
       --apply 'c: builtins.filter (n: builtins.match "cluster-.*" n != null) (builtins.attrNames c)' \
       2>/dev/null | tr -d '[]" ' | tr ',' '\n' | sed '/^$/d')
@@ -98,7 +92,6 @@ image:
 
     read -rp "Image format? [sd-card]: " fmt; fmt="${fmt:-sd-card}"
 
-    # aarch64 build feasibility (the Pi images are aarch64-linux).
     emulated=false
     [[ "$(uname -m)" == aarch64 ]] && emulated=true
     [[ -e /run/binfmt/aarch64-linux ]] && emulated=true
