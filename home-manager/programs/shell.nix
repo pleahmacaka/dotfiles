@@ -8,7 +8,7 @@
 let
   flakeAttr = lib.removePrefix "nixos-" osConfig.networking.hostName;
   flakePath = "${config.home.homeDirectory}/Projects/dotfiles";
-  # NH_FLAKE is exported by programs.nh.flake below, so nh finds the flake without a prefix.
+  # No flake prefix needed: programs.nh.flake below exports NH_FLAKE.
   switchCmd = "nh os switch -H ${flakeAttr}";
   testCmd = "nh os test -H ${flakeAttr}";
   switchCleanCmd = "nh clean all --keep 5 && rm -rf $HOME/.cache/nix && ${switchCmd}";
@@ -60,24 +60,20 @@ in
       export PATH="$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"
       export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#7f849c'
 
-      # User-maintained secrets (not in the repo): export OPENROUTER_API_KEY, etc.
+      # Hand-maintained, deliberately not in the repo.
       [[ -f "$HOME/.config/zsh/secrets.zsh" ]] && source "$HOME/.config/zsh/secrets.zsh"
 
-      # Force a widely-supported TERM for ssh; some terminals set a TERM the remote host lacks.
+      # Remote hosts often lack this terminal's own TERM entry.
       ssh() { TERM=xterm-256color command ssh "$@"; }
 
-      # bare `nvim` opens cwd; `nvim file` opens the file.
       nvim() { if (($# == 0)); then command nvim .; else command nvim "$@"; fi; }
 
-      # GitHub Copilot CLI (agentic, via `gh copilot -p`): `?? <natural language>`
-      # suggest a command, `? <cmd>` explain a command.
-      # Install once in a real terminal: `gh copilot` (downloads the CLI).
+      # Run `gh copilot` once in a real terminal; it downloads the CLI.
       copilot_suggest() { gh copilot -- -s -p "Suggest a single shell command for this request, output only the command with no prose: $*"; }
       copilot_explain() { gh copilot -- -s -p "Explain this shell command concisely: $*"; }
       alias -- '??'='noglob copilot_suggest'
       alias -- '?'='noglob copilot_explain'
 
-      # Theme toggle: GTK color-scheme + swaybg wallpaper (hyprland only).
       dark() {
         dconf write /org/gnome/desktop/interface/color-scheme "'prefer-dark'"
         dconf write /org/gnome/desktop/interface/gtk-theme "'Adwaita-dark'"
@@ -93,9 +89,7 @@ in
         hyprctl dispatch exec "swaybg -m fill -i ${lightWall}"
       }
 
-      # Claude Code via OpenRouter (default model z-ai/glm-5.2).
-      # First arg containing "/" overrides the model: claude-or sakana/fugu-ultra
-      # Key from agenix (/run/agenix/openrouter-api-key); set OPENROUTER_API_KEY to override.
+      # A first arg containing "/" overrides the model: claude-or vendor/name
       claude-or() {
         local key="''${OPENROUTER_API_KEY:-}"
         local secret=/run/agenix/openrouter-api-key
@@ -178,5 +172,7 @@ in
 
   programs.starship = {
     enable = true;
+    # Default 30ms is not enough to scan a Windows drive over WSL's 9p mount.
+    settings.scan_timeout = 100;
   };
 }
