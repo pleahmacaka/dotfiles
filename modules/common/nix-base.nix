@@ -40,13 +40,11 @@
 
   services.resolved = {
     enable = true;
-    settings.Resolve = {
-      DNSSEC = "true";
-      DNSOverTLS = "true";
-      FallbackDNS = [
-        "1.1.1.1#cloudflare-dns.com"
-        "9.9.9.9#dns.quad9.net"
-      ];
-    };
+    dnssec = "true";
+    dnsovertls = "true";
+    fallbackDns = [
+      "1.1.1.1#cloudflare-dns.com"
+      "9.9.9.9#dns.quad9.net"
+    ];
   };
 }
