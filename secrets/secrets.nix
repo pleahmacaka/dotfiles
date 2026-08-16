@@ -12,8 +12,8 @@ let
   ];
 
   pi-01 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHXBae8Y/6TeZJx9jXikYfnUzR9fkNT+oZKoGhPHRzeC cluster-pi-01";
-  pi-02 = "ssh-ed25519 AAAA...REPLACE_ME cluster-pi-02";
-  pi-03 = "ssh-ed25519 AAAA...REPLACE_ME cluster-pi-03";
+  pi-02 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM7VjhDAwnw1ykvAikHHnDYywJTA+JZSF3ZPonRZIHsX cluster-pi-02";
+  pi-03 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFT3jRX49tw5bhkL71TIyS1vC5DHaIR5EHdo7StnK8AB cluster-pi-03";
   pi-04 = "ssh-ed25519 AAAA...REPLACE_ME cluster-pi-04";
   pi-05 = "ssh-ed25519 AAAA...REPLACE_ME cluster-pi-05";
   pi-nodes = [
