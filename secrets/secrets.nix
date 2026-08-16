@@ -11,7 +11,7 @@ let
     office-desktop
   ];
 
-  pi-01 = "ssh-ed25519 AAAA...REPLACE_ME cluster-pi-01";
+  pi-01 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHXBae8Y/6TeZJx9jXikYfnUzR9fkNT+oZKoGhPHRzeC cluster-pi-01";
   pi-02 = "ssh-ed25519 AAAA...REPLACE_ME cluster-pi-02";
   pi-03 = "ssh-ed25519 AAAA...REPLACE_ME cluster-pi-03";
   pi-04 = "ssh-ed25519 AAAA...REPLACE_ME cluster-pi-04";
@@ -28,8 +28,10 @@ let
   ];
 
   cluster-nodes = pi-nodes ++ x86-nodes;
+
+  enrolled = builtins.filter (key: builtins.match ".*REPLACE_ME.*" key == null);
 in
 {
-  # Add desktop/office-desktop once their host keys above are real.
-  "openrouter-api-key.age".publicKeys = operators ++ [ laptop ];
+  "openrouter-api-key.age".publicKeys = enrolled (operators ++ [ laptop ]);
+  "wifi.age".publicKeys = enrolled (operators ++ cluster-nodes);
 }
