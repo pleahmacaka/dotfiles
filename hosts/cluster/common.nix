@@ -2,6 +2,11 @@
 
 let
   operatorKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOzV65BUPEPNJqW5FvcxOiYu8zN4TDC6fKzGtQFCJEfk pleahmacaka@nixos-laptop";
+  recoveryKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICllJnamepHVRtHvhIKLtcxbPscfdjBY9IWFLHtOUWif pleahmacaka@rpi5-02";
+  adminKeys = [
+    operatorKey
+    recoveryKey
+  ];
 in
 {
   imports = [
@@ -49,6 +54,7 @@ in
     enable = true;
     package = pkgs.incus;
     preseed = null;
+    ui.enable = true;
   };
 
   users.users.pleahmacaka.extraGroups = [
@@ -56,14 +62,15 @@ in
     "incus-admin"
     "i2c"
   ];
-  users.users.pleahmacaka.openssh.authorizedKeys.keys = [ operatorKey ];
-  users.users.root.openssh.authorizedKeys.keys = [ operatorKey ];
+  users.users.pleahmacaka.openssh.authorizedKeys.keys = adminKeys;
+  users.users.root.openssh.authorizedKeys.keys = adminKeys;
 
   networking.nftables.enable = true;
 
   networking.firewall = {
     enable = true;
     trustedInterfaces = [ "incusbr0" ];
+    allowedTCPPorts = [ 22 ];
     interfaces.tailscale0.allowedTCPPorts = [
       22
       8443
