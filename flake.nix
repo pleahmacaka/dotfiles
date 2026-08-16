@@ -35,6 +35,11 @@
     let
       system = "x86_64-linux";
 
+      forDevSystems = nixpkgs.lib.genAttrs [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
+
       mkNixosConfig =
         {
           hostname,
@@ -69,11 +74,15 @@
           ++ modules;
         };
 
-      # nixpkgs is pinned to this flake's so all hosts share one channel.
       mkClusterPi =
-        { hostname }:
+        {
+          hostname,
+          extraModules ? [ ],
+        }:
+        let
+          nodeFile = ./hosts/cluster/pi + "/${nixpkgs.lib.removePrefix "cluster-" hostname}.nix";
+        in
         nixos-raspberrypi.lib.nixosSystem {
-          inherit nixpkgs;
           system = "aarch64-linux";
           specialArgs = { inherit inputs; };
           modules = [
@@ -82,7 +91,9 @@
             ./hosts/cluster/common.nix
             ./hosts/cluster/pi/common.nix
             { networking.hostName = hostname; }
-          ];
+          ]
+          ++ nixpkgs.lib.optional (builtins.pathExists nodeFile) nodeFile
+          ++ extraModules;
         };
 
       piHostNames = [
@@ -98,6 +109,21 @@
           value = mkClusterPi {
             hostname = "cluster-${name}";
           };
+        }) piHostNames
+      );
+
+      piImages = builtins.listToAttrs (
+        map (name: {
+          name = "image-${name}";
+          value =
+            (mkClusterPi {
+              hostname = "cluster-${name}";
+
+              extraModules = [
+                nixos-raspberrypi.nixosModules.sd-image
+                ./hosts/cluster/bootstrap.nix
+              ];
+            }).config.system.build.sdImage;
         }) piHostNames
       );
     in
@@ -142,14 +168,19 @@
       }
       // piConfigs;
 
-      devShells.${system}.default = nixpkgs.legacyPackages.${system}.mkShellNoCC {
-        packages = with nixpkgs.legacyPackages.${system}; [
-          just
-          nixfmt
-          agenix.packages.${system}.default
-        ];
-      };
+      packages.aarch64-linux = piImages;
 
-      formatter.${system} = nixpkgs.legacyPackages.${system}.nixfmt;
+      devShells = forDevSystems (s: {
+        default = nixpkgs.legacyPackages.${s}.mkShellNoCC {
+          packages = with nixpkgs.legacyPackages.${s}; [
+            just
+            nixfmt
+            nixos-rebuild
+            agenix.packages.${s}.default
+          ];
+        };
+      });
+
+      formatter = forDevSystems (s: nixpkgs.legacyPackages.${s}.nixfmt);
     };
 }
