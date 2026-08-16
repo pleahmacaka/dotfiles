@@ -74,16 +74,37 @@
       Type = "oneshot";
       RemainAfterExit = true;
     };
+    path = [
+      pkgs.coreutils
+      pkgs.systemd
+      pkgs.tailscale
+    ];
     script = ''
       key=/boot/firmware/ts-authkey
       if [ ! -f "$key" ]; then
         echo "no $key — skipping tailnet auto-join (reach me over the LAN instead)"
         exit 0
       fi
-      ${pkgs.tailscale}/bin/tailscale up --ssh \
-        --auth-key="$(${pkgs.coreutils}/bin/cat "$key")" \
-        --hostname="${config.networking.hostName}" || exit 0
-      ${pkgs.coreutils}/bin/shred -u "$key" 2>/dev/null || ${pkgs.coreutils}/bin/rm -f "$key"
+
+      for i in $(seq 1 60); do
+        [ "$(timedatectl show -p NTPSynchronized --value)" = yes ] && break
+        [ "$i" = 60 ] && echo "clock still unsynchronised after 5min, trying anyway"
+        sleep 5
+      done
+
+      for i in $(seq 1 30); do
+        if tailscale up --ssh \
+             --auth-key="$(cat "$key")" \
+             --hostname="${config.networking.hostName}"; then
+          shred -u "$key" 2>/dev/null || rm -f "$key"
+          exit 0
+        fi
+        echo "tailnet join attempt $i failed, retrying in 10s"
+        sleep 10
+      done
+
+      echo "tailnet join never succeeded — do NOT deploy this node yet"
+      exit 1
     '';
   };
 
